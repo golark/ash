@@ -55,9 +55,9 @@ download-model: venv
 	@if [ ! -d "models/Qwen2.5-Coder-3B-Quantized" ]; then \
 		echo "Model not found locally. Downloading from Hugging Face..."; \
 		if [ -f "venv/bin/activate" ]; then \
-			$(VENV) python models/download_model.py || echo "Model download failed, continuing..."; \
+			$(VENV) python ash/download_model.py || echo "Model download failed, continuing..."; \
 		else \
-			python models/download_model.py || echo "Model download failed, continuing..."; \
+			python ash/download_model.py || echo "Model download failed, continuing..."; \
 		fi; \
 	else \
 		echo "Model already exists locally at models/Qwen2.5-Coder-3B-Quantized"; \
