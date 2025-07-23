@@ -1,0 +1,37 @@
+{
+  "metadata": {
+    "description": "Intermediate AI Command Generation Test Cases",
+    "version": "1.0",
+    "scoring": {
+      "2": "Intermediate commands (weekly usage)"
+    }
+  },
+  "tests": [
+    {"query": "search for a file called x.txt recursively", "expected": ["find .", "find"], "points": 2},
+    {"query": "count lines in file.txt", "expected": ["wc -l file.txt", "cat file.txt | wc -l"], "points": 2},
+    {"query": "show first 10 lines of file.txt", "expected": ["head -n 10 file.txt", "head file.txt"], "points": 2},
+    {"query": "show last 10 lines of file.txt", "expected": ["tail -n 10 file.txt", "tail file.txt"], "points": 2},
+    {"query": "show memory usage", "expected": ["free -h", "vm_stat", "top -l 1 | grep PhysMem", "top"], "points": 2},
+    {"query": "show system load", "expected": ["uptime", "w"], "points": 2},
+    {"query": "show network connections", "expected": ["netstat -tuln", "ss -tuln", "netstat"], "points": 2},
+    {"query": "kill process 1234", "expected": ["kill 1234", "kill -9 1234", "pkill -f pid=1234"], "points": 2},
+    {"query": "kill all python processes", "expected": ["pkill python", "pkill -f python", "killall python", "ps -ef | grep python | awk '{print $2}' | xargs kill -9"], "points": 2},
+    {"query": "compress file.txt", "expected": ["gzip file.txt", "bzip2 file.txt", "tar -czvf file.tar.gz file.txt"], "points": 2},
+    {"query": "extract archive.tar.gz", "expected": ["tar -xzf archive.tar.gz", "tar -xzvf archive.tar.gz", "tar -zxvf archive.tar.gz"], "points": 2},
+    {"query": "create tar archive of directory tests", "expected": ["tar -czf tests.tar.gz tests", "tar -czvf tests.tar.gz tests", "tar -cvzf tests.tar.gz tests"], "points": 2},
+    {"query": "zip directory tests", "expected": ["zip -r tests.zip tests"], "points": 2},
+    {"query": "unzip file.zip", "expected": ["unzip file.zip"], "points": 2},
+    {"query": "change password", "expected": ["passwd"], "points": 2},
+    {"query": "switch to user bob", "expected": ["su bob", "sudo su - bob"], "points": 2},
+    {"query": "show current user", "expected": ["whoami", "id -un"], "points": 2},
+    {"query": "number of files", "expected": ["ls -l | wc -l"], "points": 2},
+    {"query": "change file.txt permissions to 755", "expected": ["chmod 755 file.txt"], "points": 2},
+    {"query": "change owner of file.txt to bob", "expected": ["chown bob file.txt", "sudo chown bob file.txt", "sudo chown bob:bob file.txt"], "points": 2},
+    {"query": "fetch submodules recursively", "expected": ["git submodule update --init --recursive"], "points": 2}
+  ],
+  "summary": {
+    "total_tests": 20,
+    "intermediate_tests": 20,
+    "total_points": 40
+  }
+} 

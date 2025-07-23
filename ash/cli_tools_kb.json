@@ -1,0 +1,219 @@
+[
+  {
+    "use_case": "Move files or directories",
+    "best_tool": "mv",
+    "description": "Move or rename files and directories.",
+    "examples": [
+      "mv source.txt destination.txt",
+      "mv file.txt /path/to/dir/",
+      "mv oldname.txt newname.txt"
+    ],
+    "recommended_flags": [
+      {"flag": "-i", "description": "Prompt before overwrite"},
+      {"flag": "-v", "description": "Verbose output"},
+      {"flag": "-n", "description": "Do not overwrite existing files"}
+    ],
+    "alternatives": ["rsync", "cp && rm"],
+    "caveats": "Does not work across filesystems for directories; use rsync for large moves."
+  },
+  {
+    "use_case": "Delete files",
+    "best_tool": "rm",
+    "description": "Remove files from the filesystem.",
+    "examples": [
+      "rm file.txt",
+      "rm *.log",
+      "rm -i important.txt"
+    ],
+    "recommended_flags": [
+      {"flag": "-i", "description": "Prompt before every removal"},
+      {"flag": "-f", "description": "Ignore nonexistent files, never prompt"},
+      {"flag": "-v", "description": "Verbose output"}
+    ],
+    "alternatives": ["unlink"],
+    "caveats": "Be careful: deleted files cannot be easily recovered."
+  },
+  {
+    "use_case": "Delete directories recursively",
+    "best_tool": "rm",
+    "description": "Remove directories and their contents recursively.",
+    "examples": [
+      "rm -r folder/",
+      "rm -rf temp/"
+    ],
+    "recommended_flags": [
+      {"flag": "-r", "description": "Recursive removal"},
+      {"flag": "-f", "description": "Force removal without prompt"},
+      {"flag": "-v", "description": "Verbose output"}
+    ],
+    "alternatives": ["rmdir (for empty dirs)", "find . -delete"],
+    "caveats": "Use -rf with extreme caution."
+  },
+  {
+    "use_case": "Copy files or directories",
+    "best_tool": "cp",
+    "description": "Copy files and directories.",
+    "examples": [
+      "cp file.txt backup.txt",
+      "cp -r dir1/ dir2/",
+      "cp -iv file1.txt file2.txt /dest/"
+    ],
+    "recommended_flags": [
+      {"flag": "-r", "description": "Recursive copy for directories"},
+      {"flag": "-i", "description": "Prompt before overwrite"},
+      {"flag": "-v", "description": "Verbose output"},
+      {"flag": "-u", "description": "Copy only when the SOURCE file is newer than the destination file or when the destination file is missing"}
+    ],
+    "alternatives": ["rsync", "install"],
+    "caveats": "For large or remote copies, use rsync."
+  },
+  {
+    "use_case": "Synchronize directories",
+    "best_tool": "rsync",
+    "description": "Efficiently synchronize files and directories between locations.",
+    "examples": [
+      "rsync -avh source/ dest/",
+      "rsync -avz user@host:/src/ /local/dest/"
+    ],
+    "recommended_flags": [
+      {"flag": "-a", "description": "Archive mode (recursive, preserves permissions, etc.)"},
+      {"flag": "-v", "description": "Verbose output"},
+      {"flag": "-h", "description": "Human-readable numbers"},
+      {"flag": "-z", "description": "Compress file data during the transfer"},
+      {"flag": "--delete", "description": "Delete extraneous files from destination dirs"}
+    ],
+    "alternatives": ["cp", "scp"],
+    "caveats": "Be careful with --delete; it will remove files in the destination not present in the source."
+  },
+  {
+    "use_case": "Archive or compress files and directories",
+    "best_tool": "tar",
+    "description": "Create compressed or uncompressed archive files (tarballs).",
+    "examples": [
+      "tar -czvf archive.tar.gz folder/",
+      "tar -cvf archive.tar folder/",
+      "tar -czf backup.tgz *.txt"
+    ],
+    "recommended_flags": [
+      {"flag": "-c", "description": "Create a new archive"},
+      {"flag": "-z", "description": "Compress with gzip"},
+      {"flag": "-j", "description": "Compress with bzip2"},
+      {"flag": "-J", "description": "Compress with xz"},
+      {"flag": "-v", "description": "Verbose output"},
+      {"flag": "-f", "description": "Specify archive file name"}
+    ],
+    "alternatives": ["zip", "gzip", "bzip2"],
+    "caveats": "The order of flags matters; -f should be last before the archive name."
+  },
+  {
+    "use_case": "Extract files from an archive",
+    "best_tool": "tar",
+    "description": "Extract files from tar, tar.gz, tar.bz2, or tar.xz archives.",
+    "examples": [
+      "tar -xzvf archive.tar.gz",
+      "tar -xvf archive.tar",
+      "tar -xJvf archive.tar.xz"
+    ],
+    "recommended_flags": [
+      {"flag": "-x", "description": "Extract files from archive"},
+      {"flag": "-z", "description": "Decompress gzip archives"},
+      {"flag": "-j", "description": "Decompress bzip2 archives"},
+      {"flag": "-J", "description": "Decompress xz archives"},
+      {"flag": "-v", "description": "Verbose output"},
+      {"flag": "-f", "description": "Specify archive file name"}
+    ],
+    "alternatives": ["unzip", "gzip", "bzip2", "7z"],
+    "caveats": "The order of flags matters; -f should be last before the archive name."
+  },
+  {
+    "use_case": "Create zip archives",
+    "best_tool": "zip",
+    "description": "Create compressed zip archive files.",
+    "examples": [
+      "zip archive.zip file1.txt file2.txt",
+      "zip -r archive.zip folder/"
+    ],
+    "recommended_flags": [
+      {"flag": "-r", "description": "Recursively add files/directories"},
+      {"flag": "-9", "description": "Maximum compression"},
+      {"flag": "-e", "description": "Encrypt the archive with a password"},
+      {"flag": "-v", "description": "Verbose output"}
+    ],
+    "alternatives": ["tar", "gzip", "7z"],
+    "caveats": "Not all systems have zip installed by default."
+  },
+  {
+    "use_case": "Extract zip archives",
+    "best_tool": "unzip",
+    "description": "Extract files from zip archive files.",
+    "examples": [
+      "unzip archive.zip",
+      "unzip -d output_dir archive.zip"
+    ],
+    "recommended_flags": [
+      {"flag": "-d", "description": "Extract to specified directory"},
+      {"flag": "-l", "description": "List contents of archive"},
+      {"flag": "-o", "description": "Overwrite files WITHOUT prompting"},
+      {"flag": "-v", "description": "Verbose output"}
+    ],
+    "alternatives": ["tar", "7z"],
+    "caveats": "Not all systems have unzip installed by default."
+  },
+  {
+    "use_case": "Change file or directory ownership",
+    "best_tool": "chown",
+    "description": "Change the owner and/or group of files and directories.",
+    "examples": [
+      "chown user file.txt",
+      "chown user:group file.txt",
+      "chown -R user:group folder/"
+    ],
+    "recommended_flags": [
+      {"flag": "-R", "description": "Operate on files and directories recursively"},
+      {"flag": "-v", "description": "Verbose output"},
+      {"flag": "-c", "description": "Report only when a change is made"}
+    ],
+    "alternatives": ["chgrp"],
+    "caveats": "Requires superuser privileges to change ownership to another user. Use with caution, especially recursively."
+  },
+  {
+    "use_case": "Find files and directories",
+    "best_tool": "find",
+    "description": "Search for files and directories in a directory hierarchy based on name, type, size, modification time, and other criteria.",
+    "examples": [
+      "find . -name 'file.txt'",
+      "find /path/to/search -type d -name 'backup'",
+      "find . -mtime -1",
+      "find . -size +100M"
+    ],
+    "recommended_flags": [
+      {"flag": "-name", "description": "Search by file name pattern"},
+      {"flag": "-type", "description": "Filter by file type (f=file, d=directory, l=symlink, etc.)"},
+      {"flag": "-mtime", "description": "Filter by modification time (in days)"},
+      {"flag": "-size", "description": "Filter by file size"},
+      {"flag": "-exec", "description": "Execute a command on each found item"}
+    ],
+    "alternatives": ["locate", "fd", "grep -r (for content)"],
+    "caveats": "Can be slow on large directory trees. Quoting patterns is important to avoid shell expansion. Use -exec with care."
+  },
+  {
+    "use_case": "Display system information",
+    "best_tool": "uname",
+    "description": "Print system information such as the kernel name, network node hostname, kernel release, and more.",
+    "examples": [
+      "uname",
+      "uname -a",
+      "uname -r",
+      "uname -m"
+    ],
+    "recommended_flags": [
+      {"flag": "-a", "description": "Print all available system information"},
+      {"flag": "-s", "description": "Print the kernel name (default)"},
+      {"flag": "-r", "description": "Print the kernel release"},
+      {"flag": "-m", "description": "Print the machine hardware name"},
+      {"flag": "-n", "description": "Print the network node hostname"}
+    ],
+    "alternatives": ["hostnamectl", "lsb_release", "cat /etc/os-release"],
+    "caveats": "The information shown depends on the system and available kernel features. For detailed OS info, use lsb_release or /etc/os-release."
+  }
+] 
