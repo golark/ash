@@ -66,7 +66,7 @@ download-model: venv
 install: build
 	./install.sh
 
-build: clean download
+build: clean venv download-model
 	@echo "Finding llama_cpp library paths..."
 	@$(VENV) python -c "import llama_cpp; import os; print('llama_cpp_path:', os.path.dirname(llama_cpp.__file__))" > /tmp/llama_path.txt 2>/dev/null || echo "llama_cpp not found, building without binary dependencies"
 	@if [ -f /tmp/llama_path.txt ]; then \
