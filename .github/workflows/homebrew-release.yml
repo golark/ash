@@ -1,0 +1,206 @@
+name: Homebrew Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  build-and-release:
+    runs-on: macos-latest
+    
+    defaults:
+      run:
+        shell: bash
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21'
+    
+    - name: Install system dependencies
+      run: |
+        # Install PyInstaller and other build dependencies
+        python -m pip install --upgrade pip
+        pip install pyinstaller
+    
+    - name: Create virtual environment and install dependencies
+      run: |
+        python3 -m venv venv
+        source venv/bin/activate
+        pip install -r requirements.txt
+        
+        # Verify key dependencies are installed
+        python -c "import huggingface_hub; print('huggingface_hub version:', huggingface_hub.__version__)"
+        python -c "import transformers; print('transformers version:', transformers.__version__)"
+    
+    - name: Download model
+      run: |
+        source venv/bin/activate
+        echo "Current directory: $(pwd)"
+        echo "Python path: $(which python)"
+        echo "Python version: $(python --version)"
+        
+        # Create models directory if it doesn't exist
+        mkdir -p models
+        echo "Created models directory"
+        
+        echo "Files in models directory:"
+        ls -la models/
+        
+        # Test download script syntax
+        python -m py_compile models/download_model.py
+        echo "Download script syntax is valid"
+        
+        echo "Running model download..."
+        python models/download_model.py || {
+          echo "Model download failed, but continuing with build..."
+          echo "Model will be downloaded on first run"
+        }
+        echo "Model download step completed"
+    
+    - name: Verify source files
+      run: |
+        echo "Checking required source files..."
+        echo "Current directory structure:"
+        ls -la
+        echo ""
+        echo "Ash directory:"
+        ls -la ash/
+        echo ""
+        echo "Models directory:"
+        ls -la models/ || echo "Models directory doesn't exist yet"
+        
+        # Verify key files exist
+        [[ -f "ash/server.py" ]] || exit 1
+        [[ -f "ash/client.go" ]] || exit 1
+        [[ -f "ash/ash.zsh" ]] || exit 1
+        [[ -f "ash/cli_tools_kb.json" ]] || exit 1
+        [[ -f "install.sh" ]] || exit 1
+        [[ -f "requirements.txt" ]] || exit 1
+        
+        echo "All required source files found"
+    
+    - name: Build application
+      run: |
+        source venv/bin/activate
+        
+        # Build the server with PyInstaller
+        if [[ -d "models/Qwen2.5-Coder-3B-Quantized" ]]; then
+          echo "Building with model files..."
+          pyinstaller --noconfirm --onefile ash/server.py --name ash-server \
+            --add-data 'models/Qwen2.5-Coder-3B-Quantized:models/Qwen2.5-Coder-3B-Quantized'
+        else
+          echo "Building without model files (will be downloaded at runtime)..."
+          pyinstaller --noconfirm --onefile ash/server.py --name ash-server
+        fi
+        
+        # Build the Go client
+        go build -o dist/ash-client ash/client.go
+        
+        # Verify binaries were created
+        ls -la dist/
+        file dist/ash-client
+        file dist/ash-server
+        
+        # Verify model files are accessible
+        if [[ -d "models/Qwen2.5-Coder-3B-Quantized" ]]; then
+          echo "Model files found:"
+          ls -la models/Qwen2.5-Coder-3B-Quantized/
+        else
+          echo "Warning: Model files not found - will be downloaded at runtime"
+        fi
+        
+        echo "Build completed successfully!"
+    
+    - name: Create Homebrew package
+      run: |
+        VERSION=${GITHUB_REF#refs/tags/}
+        PACKAGE_NAME="ash-${VERSION}"
+        
+        mkdir -p "dist-package/$PACKAGE_NAME"
+        
+        # Copy binaries
+        cp dist/ash-client "dist-package/$PACKAGE_NAME/"
+        cp dist/ash-server "dist-package/$PACKAGE_NAME/"
+        
+        # Copy shell integration files
+        cp ash/ash.zsh "dist-package/$PACKAGE_NAME/"
+        cp ash/cli_tools_kb.json "dist-package/$PACKAGE_NAME/"
+        
+        # Copy installation files
+        cp install.sh "dist-package/$PACKAGE_NAME/"
+        cp README.md "dist-package/$PACKAGE_NAME/"
+        
+        # Verify all files are present
+        echo "Package contents:"
+        ls -la "dist-package/$PACKAGE_NAME/"
+        
+        cd dist-package
+        tar -czf "${PACKAGE_NAME}.tar.gz" "$PACKAGE_NAME"
+        
+        # Calculate SHA256 for Homebrew
+        SHA256=$(shasum -a 256 "${PACKAGE_NAME}.tar.gz" | cut -d' ' -f1)
+        echo "SHA256: $SHA256"
+        echo "SHA256=$SHA256" >> $GITHUB_ENV
+        
+        # Show package info
+        echo "Package created: ${PACKAGE_NAME}.tar.gz"
+        ls -lh "${PACKAGE_NAME}.tar.gz"
+    
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: dist-package/*.tar.gz
+        generate_release_notes: true
+        body: |
+          ## Ash v${{ github.ref_name }}
+          
+          AI-powered shell assistant that translates natural language to commands.
+          
+          ### Installation
+          
+          **Homebrew:**
+          ```bash
+          brew install cjan/ash/ash
+          ash-install
+          ```
+          
+          **Manual:**
+          ```bash
+          tar -xzf ash-${{ github.ref_name }}.tar.gz
+          cd ash-${{ github.ref_name }}
+          ./install.sh
+          ```
+          
+          ### Features
+          - Local AI model (Qwen2.5-Coder-3B-Quantized)
+          - Natural language to shell commands
+          - Zsh integration with Ctrl+G toggle
+          - Self-contained installation
+          
+          ### SHA256
+          `${{ env.SHA256 }}`
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # Alternative: Use PAT if GITHUB_TOKEN doesn't work
+        # GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+    
+    - name: Update Homebrew formula
+      run: |
+        # Create updated formula with correct SHA256
+        sed "s/sha256 \".*\"/sha256 \"${{ env.SHA256 }}\"/" ash.rb > ash-updated.rb
+        echo "Updated formula with SHA256: ${{ env.SHA256 }}"
+        echo "Formula saved as ash-updated.rb" 
