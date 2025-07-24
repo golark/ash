@@ -1,6 +1,7 @@
-# Homebrew Tap for Ash
+![Ash Banner](media/banner.png)
 
-This is the Homebrew tap for [Ash](https://github.com/golark/ash), an AI-powered shell assistant that translates natural language to commands.
+
+Ash is a terminal assistant that translates natural language into efficient shell commands using a local AI model. It works on top of zsh - simply hit `Ctrl+G` to enable ash mode.
 
 ## Installation
 
@@ -15,11 +16,7 @@ brew install ash
 ash-install
 ```
 
-## What is Ash?
-
-Ash is a terminal assistant that translates natural language into efficient shell commands using a local AI model. It works on top of zsh - simply hit `Ctrl+G` to enable ash mode.
-
-### Features
+## Features
 
 - Local AI model (Qwen2.5-Coder-3B-Quantized)
 - Natural language to shell commands
