@@ -53,7 +53,7 @@ download-model: venv
 	$(VENV) python scripts/download_model.py Qwen/Qwen2.5-Coder-3B-Instruct-GGUF qwen2.5-coder-3b-instruct-q4_k_m.gguf
 
 install: build
-	./install.sh
+	./sciprts/install.sh
 
 build: clean venv download-model
 	@echo "Finding llama_cpp library paths..."
