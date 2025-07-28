@@ -20,7 +20,7 @@ def test_model_path_environment_variable():
             if env_path and os.path.exists(env_path):
                 result = env_path
             else:
-                result = 'models/Qwen2.5-Coder-3B-Quantized/qwen2.5-coder-3b-q4_0.gguf'
+                result = 'models/qwen2.5-coder-3b-instruct-q4_k_m.gguf'
             
             assert result == test_path, f"Expected {test_path}, got {result}"
             print("✅ Environment variable test passed")
@@ -34,9 +34,9 @@ def test_model_path_fallback():
             if env_path and os.path.exists(env_path):
                 result = env_path
             else:
-                result = 'models/Qwen2.5-Coder-3B-Quantized/qwen2.5-coder-3b-q4_0.gguf'
+                result = 'models/qwen2.5-coder-3b-instruct-q4_k_m.gguf'
             
-            expected = 'models/Qwen2.5-Coder-3B-Quantized/qwen2.5-coder-3b-q4_0.gguf'
+            expected = 'models/qwen2.5-coder-3b-instruct-q4_k_m.gguf'
             assert result == expected, f"Expected {expected}, got {result}"
             print("✅ Fallback test passed")
 

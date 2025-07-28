@@ -98,10 +98,10 @@ jobs:
         source venv/bin/activate
         
         # Build the server with PyInstaller
-        if [[ -d "models/Qwen2.5-Coder-3B-Quantized" ]]; then
+        if [[ -f "models/qwen2.5-coder-3b-instruct-q4_k_m.gguf" ]]; then
           echo "Building with model files..."
           pyinstaller --noconfirm --onefile ash/server.py --name ash-server \
-            --add-data 'models/Qwen2.5-Coder-3B-Quantized:models/Qwen2.5-Coder-3B-Quantized'
+            --add-data 'models/qwen2.5-coder-3b-instruct-q4_k_m.gguf:models'
         else
           echo "Building without model files (will be downloaded at runtime)..."
           pyinstaller --noconfirm --onefile ash/server.py --name ash-server
@@ -116,9 +116,9 @@ jobs:
         file dist/ash-server
         
         # Verify model files are accessible
-        if [[ -d "models/Qwen2.5-Coder-3B-Quantized" ]]; then
+        if [[ -f "models/qwen2.5-coder-3b-instruct-q4_k_m.gguf" ]]; then
           echo "Model files found:"
-          ls -la models/Qwen2.5-Coder-3B-Quantized/
+          ls -la models/qwen2.5-coder-3b-instruct-q4_k_m.gguf
         else
           echo "Warning: Model files not found - will be downloaded at runtime"
         fi

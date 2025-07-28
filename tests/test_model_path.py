@@ -42,7 +42,7 @@ class TestModelPath(unittest.TestCase):
         with patch.dict(os.environ, {}, clear=True):
             with patch('os.path.exists', return_value=False):
                 result = get_model_path()
-                self.assertEqual(result, 'models/Qwen2.5-Coder-3B-Quantized/qwen2.5-coder-3b-q4_0.gguf')
+                self.assertEqual(result, 'models/qwen2.5-coder-3b-instruct-q4_k_m.gguf')
     
     def test_ash_model_custom_path(self):
         """Test ASHModel initialization with custom path"""

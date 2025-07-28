@@ -5,7 +5,7 @@ a = Analysis(
     ['ash/server.py'],
     pathex=[],
     binaries=[],
-    datas=[('models/Qwen2.5-Coder-3B-Quantized', 'models/Qwen2.5-Coder-3B-Quantized')],
+    datas=[('models/qwen2.5-coder-3b-instruct-q4_k_m.gguf', 'models')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},

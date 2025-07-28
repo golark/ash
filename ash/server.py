@@ -42,12 +42,12 @@ def get_model_path():
     if getattr(sys, 'frozen', False):
         # Running as PyInstaller executable
         base_path = sys._MEIPASS
-        embedded_path = os.path.join(base_path, 'models', 'Qwen2.5-Coder-3B-Quantized', 'qwen2.5-coder-3b-q4_0.gguf')
+        embedded_path = os.path.join(base_path, 'models', 'qwen2.5-coder-3b-instruct-q4_k_m.gguf')
         if os.path.exists(embedded_path):
             return embedded_path
     
     # Fallback to default path
-    default_path = 'models/Qwen2.5-Coder-3B-Quantized/qwen2.5-coder-3b-q4_0.gguf'
+    default_path = 'models/qwen2.5-coder-3b-instruct-q4_k_m.gguf'
     return default_path
 
 MODEL_PATH = get_model_path()

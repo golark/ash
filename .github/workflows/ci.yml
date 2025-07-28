@@ -85,10 +85,10 @@ jobs:
         source venv/bin/activate
         
         # Build the server with PyInstaller
-        if [[ -d "models/Qwen2.5-Coder-3B-Quantized" ]]; then
+        if [[ -f "models/qwen2.5-coder-3b-instruct-q4_k_m.gguf" ]]; then
           echo "Building with model files..."
           pyinstaller --noconfirm --onefile ash/server.py --name ash-server \
-            --add-data 'models/Qwen2.5-Coder-3B-Quantized:models/Qwen2.5-Coder-3B-Quantized'
+            --add-data 'models/qwen2.5-coder-3b-instruct-q4_k_m.gguf:models'
         else
           echo "Building without model files..."
           pyinstaller --noconfirm --onefile ash/server.py --name ash-server

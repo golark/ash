@@ -6,7 +6,7 @@ VENV = . venv/bin/activate &&
 help:
 	@echo "Available targets:"
 	@echo "  venv      - Create virtual environment and install dependencies"
-	@echo "  download  - Download Qwen2.5-Coder-3B-Quantized model from Hugging Face"
+	@echo "  download  - Download Qwen2.5-Coder-3B-Instruct-Quantized model from Hugging Face"
 	@echo "  build     - Build the application (includes download)"
 	@echo "  install   - Install the built application"
 	@echo "  run       - Run the main application"
@@ -50,18 +50,7 @@ clean:
 	rm -rf dist build ash-client.spec ash-server.spec dist dist-package
 
 download-model: venv
-	@echo "Checking for Qwen2.5-Coder-3B-Quantized model..."
-	@mkdir -p models
-	@if [ ! -d "models/Qwen2.5-Coder-3B-Quantized" ]; then \
-		echo "Model not found locally. Downloading from Hugging Face..."; \
-		if [ -f "venv/bin/activate" ]; then \
-			$(VENV) python ash/download_model.py || echo "Model download failed, continuing..."; \
-		else \
-			python ash/download_model.py || echo "Model download failed, continuing..."; \
-		fi; \
-	else \
-		echo "Model already exists locally at models/Qwen2.5-Coder-3B-Quantized"; \
-	fi
+	$(VENV) python ash/download_model.py Qwen/Qwen2.5-Coder-3B-Instruct-GGUF qwen2.5-coder-3b-instruct-q4_k_m.gguf
 
 install: build
 	./install.sh
@@ -72,20 +61,20 @@ build: clean venv download-model
 	@if [ -f /tmp/llama_path.txt ]; then \
 		LLAMA_PATH=$$(grep 'llama_cpp_path:' /tmp/llama_path.txt | cut -d' ' -f2); \
 		echo "Found llama_cpp at: $$LLAMA_PATH"; \
-		if [ -d "models/Qwen2.5-Coder-3B-Quantized" ]; then \
+		if [ -f "models/qwen2.5-coder-3b-instruct-q4_k_m.gguf" ]; then \
 			echo "Building with model files..."; \
 			$(VENV) pyinstaller --noconfirm --onefile ash/server.py --name ash-server \
-			  --add-data 'models/Qwen2.5-Coder-3B-Quantized:models/Qwen2.5-Coder-3B-Quantized'; \
+			  --add-data 'models/qwen2.5-coder-3b-instruct-q4_k_m.gguf:models'; \
 		else \
 			echo "Building without model files (will be downloaded at runtime)..."; \
 			$(VENV) pyinstaller --noconfirm --onefile ash/server.py --name ash-server; \
 		fi; \
 	else \
 		echo "Building without llama_cpp binary dependencies..."; \
-		if [ -d "models/Qwen2.5-Coder-3B-Quantized" ]; then \
+		if [ -f "models/qwen2.5-coder-3b-instruct-q4_k_m.gguf" ]; then \
 			echo "Building with model files..."; \
 			$(VENV) pyinstaller --noconfirm --onefile ash/server.py --name ash-server \
-			  --add-data 'models/Qwen2.5-Coder-3B-Quantized:models/Qwen2.5-Coder-3B-Quantized'; \
+			  --add-data 'models/qwen2.5-coder-3b-instruct-q4_k_m.gguf:models'; \
 		else \
 			echo "Building without model files (will be downloaded at runtime)..."; \
 			$(VENV) pyinstaller --noconfirm --onefile ash/server.py --name ash-server; \

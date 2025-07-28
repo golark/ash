@@ -74,9 +74,9 @@ else
 fi
 
 # Copy model if it exists
-if [[ -d "models/Qwen2.5-Coder-3B-Quantized" ]]; then
+if [[ -f "models/qwen2.5-coder-3b-instruct-q4_k_m.gguf" ]]; then
     print_status "Copying model files..."
-    cp -r models/Qwen2.5-Coder-3B-Quantized "$INSTALL_DIR/"
+    cp models/qwen2.5-coder-3b-instruct-q4_k_m.gguf "$INSTALL_DIR/"
     print_success "Model files copied"
 else
     print_warning "Model files not found. They will be downloaded on first run."
