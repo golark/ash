@@ -60,7 +60,7 @@ class ASHModel:
     This class can be used independently of the HTTP server.
     """
     
-    def __init__(self, model_path=None, n_ctx=2048, n_threads=4, verbose=False):
+    def __init__(self, model_path=None, n_ctx=4096, n_threads=4, verbose=False):
         """
         Initialize the ASH Model.
         
@@ -117,55 +117,18 @@ class ASHModel:
         if not self.is_loaded():
             raise Exception("Model is not loaded. Call load() first.")
         
-        # Build the prompt
-        prompt = f"""
-You are a helpful assistant that translates natural language instructions into valid and efficient terminal commands. 
-Return only the terminal command that accomplishes the task. Do not return alternatives, just a single command, Return only the command, no code block or markdown
-Do not add any explanations or extra text. Use best practices, common flags, and built-in tools where applicable.
-
-Here is a knowledge base of common CLI tools and their usage, flags, and examples:
-{json.dumps(self.cli_tools_kb, ensure_ascii=False, indent=2)}
+        # Build the prompt - keeping it short to fit within context window
+        prompt = f"""You translate natural language to terminal commands. Return only the command, no explanations.
 
 Examples:
-
-User: Show hidden files in the current directory  
+User: Show hidden files
 Command: ls -a
 
-User: Find all .txt files in the current folder and subfolders  
+User: Find .txt files
 Command: find . -name "*.txt"
 
-User: Create a new directory called 'projects' and move into it  
-Command: mkdir projects && cd projects
-
-User: Search for the word "TODO" in all .py files recursively  
-Command: grep -r "TODO" --include="*.py" .
-
-User: Check your current IP address  
-Command: curl ifconfig.me
-
-User: Remove all .log files in the logs directory  
-Command: rm logs/*.log
-
-User: Count how many lines are in all .sh files  
-Command: wc -l *.sh
-
-User: List all running processes with full details  
-Command: ps aux
-
-User: Print the current working directory  
-Command: pwd
-
-User: Search for aba text in files
-Command: grep aba *.txt
-
-User: copy a to upper directory
-Command cp a ..
-
-Now it's your turn.
-
-User: {query}  
-Command:
-"""
+User: {query}
+Command:"""
         try:
             response = self.model(
                 prompt,
