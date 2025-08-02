@@ -24,7 +24,7 @@ cp dist/ash-server "$DIST_DIR/$PACKAGE_NAME/"
 cp ./ash/ash.zsh "$DIST_DIR/$PACKAGE_NAME/"
 
 # Copy installation script
-cp install.sh "$DIST_DIR/$PACKAGE_NAME/"
+cp scripts/install.sh "$DIST_DIR/$PACKAGE_NAME/"
 
 # Copy documentation
 cp README.md "$DIST_DIR/$PACKAGE_NAME/"
