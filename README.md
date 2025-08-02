@@ -1,20 +1,27 @@
-![Ash Banner](media/banner.png)
+# Homebrew Tap for Ash
 
-
-Ash is a terminal assistant that translates natural language into efficient shell commands using a local AI model. It works on top of zsh - simply hit `Ctrl+G` to enable ash mode.
+This repository contains the Homebrew formula for [Ash](https://github.com/golark/ash), an AI-powered shell assistant that translates natural language to commands.
 
 ## Installation
 
 ```bash
-# Add the tap
+# Tap this repository
 brew tap golark/ash
 
-# Install ash
+# Install Ash
 brew install ash
 
-# Complete the installation
+# Run the installer
 ash-install
 ```
+
+## Usage
+
+After installation:
+
+1. Restart your terminal or run: `source ~/.zshrc`
+2. Press `Ctrl+G` to toggle Ash mode
+3. Type natural language commands like "find all python files"
 
 ## Features
 
@@ -23,19 +30,30 @@ ash-install
 - Zsh integration with Ctrl+G toggle
 - Self-contained installation
 
-## Usage
+## Uninstallation
 
-1. Enable Ash mode by pressing `Ctrl+G` in your terminal
-2. Type natural language queries like "find all Python files" or "show disk usage"
-3. Ash will translate them into shell commands
+```bash
+# Remove shell integration
+ash-uninstall
 
-## Requirements
+# Uninstall the package
+brew uninstall ash
+```
 
-- macOS
-- zsh shell
-- ~2GB free disk space (for the model)
+## Formula Details
 
-## License
+- **Version**: 0.0.8-homebrew
+- **SHA256**: `21a26225be48e7afd1ad228b6fceeb3b17d700d43d196f09e1899ef06dc70105`
+- **License**: Apache-2.0
+- **Homepage**: https://github.com/golark/ash
 
-This project is licensed under the Apache 2.0 License.
+## Manual Installation
+
+If you prefer manual installation:
+
+```bash
+curl -L https://github.com/golark/ash/releases/download/v0.0.8-homebrew/ash-v0.0.8-homebrew.tar.gz | tar -xz
+cd ash-v0.0.8-homebrew
+./install.sh
+```
 

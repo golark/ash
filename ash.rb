@@ -23,6 +23,15 @@ class Ash < Formula
       #!/bin/bash
       echo "🚀 Installing Ash shell integration..."
       
+      # Create .ash directory
+      ASH_DIR="$HOME/.ash"
+      mkdir -p "$ASH_DIR"
+      echo "✅ Created Ash directory: $ASH_DIR"
+      
+      # Copy shell integration to .ash directory
+      cp #{pkgshare}/ash.zsh "$ASH_DIR/"
+      echo "✅ Copied shell integration to $ASH_DIR"
+      
       # Add to PATH if not present
       if ! grep -q 'export PATH="#{HOMEBREW_PREFIX}/bin:$PATH"' ~/.zshrc; then
         echo 'export PATH="#{HOMEBREW_PREFIX}/bin:$PATH"' >> ~/.zshrc
@@ -30,8 +39,8 @@ class Ash < Formula
       fi
       
       # Source ash.zsh if not present
-      if ! grep -q 'source #{pkgshare}/ash.zsh' ~/.zshrc; then
-        echo 'source #{pkgshare}/ash.zsh' >> ~/.zshrc
+      if ! grep -q 'source $HOME/.ash/ash.zsh' ~/.zshrc; then
+        echo 'source $HOME/.ash/ash.zsh' >> ~/.zshrc
         echo "✅ Added Ash shell integration"
       fi
       
@@ -52,7 +61,13 @@ class Ash < Formula
       sed -i '' '/export PATH="#{HOMEBREW_PREFIX}\/bin:$PATH"/d' ~/.zshrc
       
       # Remove ash.zsh source
-      sed -i '' '/source #{pkgshare}\/ash.zsh/d' ~/.zshrc
+      sed -i '' '/source $HOME\/.ash\/ash.zsh/d' ~/.zshrc
+      
+      # Remove .ash directory
+      if [[ -d "$HOME/.ash" ]]; then
+        rm -rf "$HOME/.ash"
+        echo "✅ Removed Ash directory: $HOME/.ash"
+      fi
       
       echo "✅ Ash shell integration removed"
       echo "💡 Restart your terminal for changes to take effect"
