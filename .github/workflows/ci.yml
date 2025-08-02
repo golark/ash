@@ -102,7 +102,7 @@ jobs:
         file dist/ash-server
         
         # Test installation script syntax
-        bash -n install.sh
+        bash -n ./scripts/install.sh
         echo "Installation script syntax is valid"
         
         # Test ash.zsh syntax
