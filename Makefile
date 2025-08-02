@@ -40,19 +40,6 @@ unittest:
 	@echo "Running unit tests..."
 	$(VENV) python -m pytest tests/ -v
 
-quantize-model:
-	@echo "Setting up model quantization..."
-	@echo "1. Installing dependencies..."
-	pip install llama-cpp-python transformers
-	@echo "2. Building llama.cpp tools..."
-	@if [ ! -d "llama.cpp" ]; then \
-		git clone https://github.com/ggerganov/llama.cpp.git; \
-	fi
-	@cd llama.cpp && mkdir -p build && cd build && cmake .. && make -j4
-	@echo "3. Running quantization summary..."
-	python quantization_summary.py
-	@echo "✅ Quantization setup complete! Follow the instructions above." 
-
 clean:
 	rm -rf dist build ash-client.spec ash-server.spec dist dist-package
 
@@ -62,32 +49,33 @@ download-model: venv
 install: build
 	./sciprts/install.sh
 
-build: clean venv download-model
-	@echo "Finding llama_cpp library paths..."
-	@$(VENV) python -c "import llama_cpp; import os; print('llama_cpp_path:', os.path.dirname(llama_cpp.__file__))" > /tmp/llama_path.txt 2>/dev/null || echo "llama_cpp not found, building without binary dependencies"
-	@if [ -f /tmp/llama_path.txt ]; then \
-		LLAMA_PATH=$$(grep 'llama_cpp_path:' /tmp/llama_path.txt | cut -d' ' -f2); \
-		echo "Found llama_cpp at: $$LLAMA_PATH"; \
-		if [ -f "models/qwen2.5-coder-3b-instruct-q4_k_m.gguf" ]; then \
-			echo "Building with model files..."; \
-			$(VENV) pyinstaller --noconfirm --onefile ash/server.py --name ash-server \
-			  --add-data 'models/qwen2.5-coder-3b-instruct-q4_k_m.gguf:models'; \
-		else \
-			echo "Building without model files (will be downloaded at runtime)..."; \
-			$(VENV) pyinstaller --noconfirm --onefile ash/server.py --name ash-server; \
-		fi; \
-	else \
-		echo "Building without llama_cpp binary dependencies..."; \
-		if [ -f "models/qwen2.5-coder-3b-instruct-q4_k_m.gguf" ]; then \
-			echo "Building with model files..."; \
-			$(VENV) pyinstaller --noconfirm --onefile ash/server.py --name ash-server \
-			  --add-data 'models/qwen2.5-coder-3b-instruct-q4_k_m.gguf:models'; \
-		else \
-			echo "Building without model files (will be downloaded at runtime)..."; \
-			$(VENV) pyinstaller --noconfirm --onefile ash/server.py --name ash-server; \
-		fi; \
-	fi
+build: clean venv download-model build-client build-server
+	@echo "✅ Build complete! Using Python server with wrapper."
+	@echo "📁 Built files:"
+	@echo "   - dist/ash-server (wrapper script)"
+	@echo "   - dist/ash-client (Go binary)"
+	@echo "   - models/qwen2.5-coder-3b-instruct-q4_k_m.gguf (model file)"
+
+build-client:
 	go build -o dist/ash-client ash/client.go
+
+build-server:
+	@echo "Building ash-server wrapper..."
+	@mkdir -p dist
+	@echo '#!/bin/bash' > dist/ash-server
+	@echo '# Wrapper script for ash-server that runs the Python version' >> dist/ash-server
+	@echo '# This provides a "released" interface while using the working Python implementation' >> dist/ash-server
+	@echo '' >> dist/ash-server
+	@echo '# Get the directory where this script is located' >> dist/ash-server
+	@echo 'SCRIPT_DIR="$$(cd "$$(dirname "$${BASH_SOURCE[0]}")" && pwd)"' >> dist/ash-server
+	@echo 'PROJECT_DIR="$$(dirname "$$SCRIPT_DIR")"' >> dist/ash-server
+	@echo '' >> dist/ash-server
+	@echo '# Activate virtual environment and run the Python server' >> dist/ash-server
+	@echo 'cd "$$PROJECT_DIR"' >> dist/ash-server
+	@echo 'source venv/bin/activate' >> dist/ash-server
+	@echo 'exec python3 ash/server.py "$$@"' >> dist/ash-server
+	@chmod +x dist/ash-server
+	@echo "✅ ash-server wrapper built"
 
 release:
 	./package.sh

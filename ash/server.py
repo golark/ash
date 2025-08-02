@@ -60,14 +60,14 @@ class ASHModel:
     This class can be used independently of the HTTP server.
     """
     
-    def __init__(self, model_path=None, n_ctx=4096, n_threads=4, verbose=False):
+    def __init__(self, model_path=None, n_ctx=2048, n_threads=8, verbose=False):
         """
         Initialize the ASH Model.
         
         Args:
             model_path (str): Path to the model file. If None, uses default path.
-            n_ctx (int): Context window size
-            n_threads (int): Number of threads to use
+            n_ctx (int): Context window size (reduced for faster inference)
+            n_threads (int): Number of threads to use (increased for better performance)
             verbose (bool): Whether to enable verbose output
         """
         self.model_path = model_path or get_model_path()
@@ -96,6 +96,17 @@ class ASHModel:
             )
             end_time = time.time()
             print(f"✅ Local model loaded successfully in {end_time - start_time:.2f} seconds!")
+            
+            # Warm up the model with a dummy inference to reduce first command latency
+            print("🔥 Warming up model...")
+            warmup_start = time.time()
+            try:
+                self.model("User: test\nCommand:", max_tokens=10, temperature=0.0)
+                warmup_end = time.time()
+                print(f"✅ Model warmed up in {warmup_end - warmup_start:.2f} seconds!")
+            except Exception as e:
+                print(f"⚠️  Warm-up failed (non-critical): {e}")
+            
             return self.model
         except Exception as e:
             raise Exception(f"Failed to load model: {e}")

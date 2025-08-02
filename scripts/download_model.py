@@ -5,7 +5,6 @@ Simple script to download models from Hugging Face
 
 import sys
 import os
-from transformers import AutoTokenizer, AutoModel
 from huggingface_hub import hf_hub_download, list_repo_files
 
 
@@ -43,17 +42,12 @@ def download_model(model_name, file_name=None):
             print(f"GGUF model downloaded successfully to: {model_path}")
             
         else:
-            # For regular transformer models
-            tokenizer = AutoTokenizer.from_pretrained(model_name)
-            model = AutoModel.from_pretrained(model_name)
-            
-            # Save to models directory
-            model_path = os.path.join("models", model_name.split("/")[-1])
-            os.makedirs("models", exist_ok=True)
-            
-            tokenizer.save_pretrained(model_path)
-            model.save_pretrained(model_path)
-            
+            # For regular transformer models, use huggingface_hub
+            print(f"Downloading regular model: {model_name}")
+            model_path = hf_hub_download(
+                repo_id=model_name,
+                local_dir="models"
+            )
             print(f"Model downloaded successfully to: {model_path}")
         
     except Exception as e:
