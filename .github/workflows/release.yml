@@ -54,7 +54,7 @@ jobs:
         cp dist/ash-client "dist-package/$PACKAGE_NAME/"
         cp dist/ash-server "dist-package/$PACKAGE_NAME/"
         cp ash/ash.zsh "dist-package/$PACKAGE_NAME/"
-        cp install.sh "dist-package/$PACKAGE_NAME/"
+        cp ./scripts/install.sh "dist-package/$PACKAGE_NAME/"
         cp README.md "dist-package/$PACKAGE_NAME/"
         
         cd dist-package
