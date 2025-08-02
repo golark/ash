@@ -47,7 +47,7 @@ download-model: venv
 	$(VENV) python scripts/download_model.py Qwen/Qwen2.5-Coder-3B-Instruct-GGUF qwen2.5-coder-3b-instruct-q4_k_m.gguf
 
 install: build
-	./sciprts/install.sh
+	./scripts/install.sh
 
 build: clean venv download-model build-client build-server
 	@echo "✅ Build complete! Using Python server with wrapper."
