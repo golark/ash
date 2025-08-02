@@ -26,7 +26,7 @@ venv:
 
 # Run the main application
 run: venv
-	$(VENV) python ash/server.py --debug
+	$(VENV) python ash/server.py 
 
 # Run unit tests
 unittest:

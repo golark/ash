@@ -14,11 +14,11 @@ function ash-toggle() {
   if [[ "$ASH_ENABLED" -eq 0 ]]; then
     # Check if ash-server is running by sending a client request; if not, start it
     if ! ./dist/ash-client --ping >/dev/null 2>&1; then
-      # Start server with custom model path if specified
+      # Start Python server with custom model path if specified
       if [[ -n "$ASH_MODEL_PATH" ]]; then
-        nohup ash-server --model-path "$ASH_MODEL_PATH" >/dev/null 2>&1 &
+        nohup python3 ash/server.py --port 8765 --model-path "$ASH_MODEL_PATH" >/dev/null 2>&1 &
       else
-        nohup ash-server >/dev/null 2>&1 &
+        nohup python3 ash/server.py --port 8765 >/dev/null 2>&1 &
       fi
       echo "starting ash mode"
       ash-client --wait
