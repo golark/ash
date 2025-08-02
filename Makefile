@@ -1,4 +1,4 @@
-.PHONY: help venv run unittest quantize clean build download
+.PHONY: help venv run unittest quantize clean build download stop
 
 VENV = . venv/bin/activate &&
 
@@ -10,6 +10,7 @@ help:
 	@echo "  build     - Build the application (includes download)"
 	@echo "  install   - Install the built application"
 	@echo "  run       - Run the main application"
+	@echo "  stop      - Stop the ash server"
 	@echo "  unittest  - Run unit tests"
 	@echo "  quantize  - Set up model quantization"
 	@echo "  clean     - Clean build artifacts"
@@ -25,8 +26,14 @@ venv:
 	$(VENV) pip install -r requirements.txt
 
 # Run the main application
-run: venv
-	$(VENV) python ash/server.py 
+run: venv stop
+	$(VENV) python ash/server.py --port 8765
+
+# Stop the ash server
+stop:
+	@echo "Stopping ash server..."
+	@$(VENV) python ash/server.py --stop || echo "No ash server running or failed to stop"
+	@echo "✅ ash server stop requested"
 
 # Run unit tests
 unittest:
