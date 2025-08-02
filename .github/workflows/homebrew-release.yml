@@ -61,11 +61,11 @@ jobs:
         ls -la models/
         
         # Test download script syntax
-        python -m py_compile ash/download_model.py
+        python -m py_compile scripts/download_model.py
         echo "Download script syntax is valid"
         
         echo "Running model download..."
-        python ash/download_model.py || {
+        python scripts/download_model.py || {
           echo "Model download failed, but continuing with build..."
           echo "Model will be downloaded on first run"
         }
