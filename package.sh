@@ -26,6 +26,9 @@ cp ./ash/ash.zsh "$DIST_DIR/$PACKAGE_NAME/"
 # Copy installation script
 cp scripts/install.sh "$DIST_DIR/$PACKAGE_NAME/"
 
+# Copy uninstall script
+cp scripts/uninstall.sh "$DIST_DIR/$PACKAGE_NAME/"
+
 # Copy documentation
 cp README.md "$DIST_DIR/$PACKAGE_NAME/"
 
@@ -68,5 +71,6 @@ echo "   - ash-client (Go binary)"
 echo "   - ash-server (Python binary with embedded model)"
 echo "   - ash.zsh (Shell integration)"
 echo "   - install.sh (Installation script)"
+echo "   - uninstall.sh (Uninstall script)"
 echo "   - README.md (Documentation)"
 echo "   - quick-start.sh (Quick start guide)" 

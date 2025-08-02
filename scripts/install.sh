@@ -49,6 +49,10 @@ if [[ -f "dist/ash-client" ]]; then
     cp dist/ash-client "$INSTALL_DIR/"
     chmod +x "$INSTALL_DIR/ash-client"
     print_success "Installed ash-client"
+elif [[ -f "ash-client" ]]; then
+    cp ash-client "$INSTALL_DIR/"
+    chmod +x "$INSTALL_DIR/ash-client"
+    print_success "Installed ash-client"
 else
     print_error "ash-client binary not found. Please run 'make build' first."
     exit 1
@@ -56,6 +60,10 @@ fi
 
 if [[ -f "dist/ash-server" ]]; then
     cp dist/ash-server "$INSTALL_DIR/"
+    chmod +x "$INSTALL_DIR/ash-server"
+    print_success "Installed ash-server"
+elif [[ -f "ash-server" ]]; then
+    cp ash-server "$INSTALL_DIR/"
     chmod +x "$INSTALL_DIR/ash-server"
     print_success "Installed ash-server"
 else
@@ -68,6 +76,9 @@ print_status "Installing shell integration..."
 if [[ -f "ash/ash.zsh" ]]; then
     cp ash/ash.zsh "$INSTALL_DIR/"
     print_success "Installed ash.zsh"
+elif [[ -f "ash.zsh" ]]; then
+    cp ash.zsh "$INSTALL_DIR/"
+    print_success "Installed ash.zsh"
 else
     print_error "ash.zsh not found."
     exit 1
@@ -77,6 +88,10 @@ fi
 if [[ -f "models/qwen2.5-coder-3b-instruct-q4_k_m.gguf" ]]; then
     print_status "Copying model files..."
     cp models/qwen2.5-coder-3b-instruct-q4_k_m.gguf "$INSTALL_DIR/"
+    print_success "Model files copied"
+elif [[ -f "qwen2.5-coder-3b-instruct-q4_k_m.gguf" ]]; then
+    print_status "Copying model files..."
+    cp qwen2.5-coder-3b-instruct-q4_k_m.gguf "$INSTALL_DIR/"
     print_success "Model files copied"
 else
     print_warning "Model files not found. They will be downloaded on first run."

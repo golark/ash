@@ -1,4 +1,4 @@
-.PHONY: help venv run unittest quantize clean build download stop
+.PHONY: help venv run unittest quantize clean build download stop uninstall
 
 VENV = . venv/bin/activate &&
 
@@ -9,6 +9,7 @@ help:
 	@echo "  download  - Download Qwen2.5-Coder-3B-Instruct-Quantized model from Hugging Face"
 	@echo "  build     - Build the application (includes download)"
 	@echo "  install   - Install the built application"
+	@echo "  uninstall - Uninstall Ash from the system"
 	@echo "  run       - Run the main application"
 	@echo "  stop      - Stop the ash server"
 	@echo "  unittest  - Run unit tests"
@@ -48,6 +49,10 @@ download-model: venv
 
 install: build
 	./scripts/install.sh
+
+uninstall:
+	@echo "Uninstalling Ash..."
+	./scripts/uninstall.sh
 
 build: clean venv download-model build-client build-server
 	@echo "✅ Build complete! Using Python server with wrapper."
