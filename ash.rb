@@ -18,6 +18,8 @@ class Ash < Formula
     # Install shell integration
     pkgshare.install "ash.zsh"
     
+    # The ash-install script will create the .ash directory
+    
     # Create installation script
     (bin/"ash-install").write <<~EOS
       #!/bin/bash
@@ -57,11 +59,11 @@ class Ash < Formula
       #!/bin/bash
       echo "🗑️  Uninstalling Ash shell integration..."
       
-      # Remove from PATH
-      sed -i '' '/export PATH="#{HOMEBREW_PREFIX}\/bin:$PATH"/d' ~/.zshrc
-      
-      # Remove ash.zsh source
-      sed -i '' '/source $HOME\/.ash\/ash.zsh/d' ~/.zshrc
+      # Remove from PATH and source lines using a more reliable method
+      # Create a temporary file without the Ash-related lines
+      grep -v 'export PATH="#{HOMEBREW_PREFIX}/bin:$PATH"' ~/.zshrc | \
+      grep -v 'source.*ash.zsh' > ~/.zshrc.tmp && mv ~/.zshrc.tmp ~/.zshrc
+      echo "✅ Removed Ash configuration from ~/.zshrc"
       
       # Remove .ash directory
       if [[ -d "$HOME/.ash" ]]; then
@@ -86,14 +88,20 @@ class Ash < Formula
       🎉 Ash has been installed!
       
       To complete the installation:
-      1. Run: ash-install
+      1. Run: ash-install (this will create ~/.ash directory and configure your shell)
       2. Restart your terminal or run: source ~/.zshrc
       3. Enable Ash mode with Ctrl+G
       
       To uninstall shell integration:
       Run: ash-uninstall
       
+      Note: When uninstalling with 'brew uninstall ash', 
+      you may need to manually remove ~/.ash directory:
+      rm -rf ~/.ash
+      
       For more information, visit: #{homepage}
     EOS
   end
+  
+
 end 
