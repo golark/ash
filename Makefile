@@ -42,7 +42,7 @@ unittest:
 	$(VENV) python -m pytest tests/ -v
 
 clean:
-	rm -rf dist build ash-client.spec ash-server.spec dist dist-package
+	rm -rf dist build dist-package
 
 download-model: venv
 	$(VENV) python scripts/download_model.py Qwen/Qwen2.5-Coder-3B-Instruct-GGUF qwen2.5-coder-3b-instruct-q4_k_m.gguf
