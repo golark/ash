@@ -18,7 +18,15 @@ mkdir -p "$DIST_DIR/$PACKAGE_NAME"
 
 # Copy binaries
 cp dist/ash-client "$DIST_DIR/$PACKAGE_NAME/"
-cp dist/ash-server "$DIST_DIR/$PACKAGE_NAME/"
+# Handle both executable file and directory structures
+if [[ -d "dist/ash-server" ]]; then
+    cp -r dist/ash-server "$DIST_DIR/$PACKAGE_NAME/"
+elif [[ -f "dist/ash-server" ]]; then
+    cp dist/ash-server "$DIST_DIR/$PACKAGE_NAME/"
+else
+    echo "Error: ash-server not found. Please run 'make build' first."
+    exit 1
+fi
 
 # Copy shell integration
 cp ./ash/ash.zsh "$DIST_DIR/$PACKAGE_NAME/"
@@ -68,7 +76,7 @@ echo "   - $DIST_DIR/${PACKAGE_NAME}.zip"
 echo ""
 echo "📦 Package contents:"
 echo "   - ash-client (Go binary)"
-echo "   - ash-server (Python binary with embedded model)"
+echo "   - ash-server/ (Python executable directory)"
 echo "   - ash.zsh (Shell integration)"
 echo "   - install.sh (Installation script)"
 echo "   - uninstall.sh (Uninstall script)"

@@ -55,9 +55,9 @@ uninstall:
 	./scripts/uninstall.sh
 
 build: clean venv download-model build-client build-server
-	@echo "✅ Build complete! Using Python server with wrapper."
+	@echo "✅ Build complete! Using Python server executable."
 	@echo "📁 Built files:"
-	@echo "   - dist/ash-server (wrapper script)"
+	@echo "   - dist/ash-server/ash-server (executable)"
 	@echo "   - dist/ash-client (Go binary)"
 	@echo "   - models/qwen2.5-coder-3b-instruct-q4_k_m.gguf (model file)"
 
@@ -65,22 +65,10 @@ build-client:
 	go build -o dist/ash-client ash/client.go
 
 build-server:
-	@echo "Building ash-server wrapper..."
+	@echo "Building ash-server executable..."
 	@mkdir -p dist
-	@echo '#!/bin/bash' > dist/ash-server
-	@echo '# Wrapper script for ash-server that runs the Python version' >> dist/ash-server
-	@echo '# This provides a "released" interface while using the working Python implementation' >> dist/ash-server
-	@echo '' >> dist/ash-server
-	@echo '# Get the directory where this script is located' >> dist/ash-server
-	@echo 'SCRIPT_DIR="$$(cd "$$(dirname "$${BASH_SOURCE[0]}")" && pwd)"' >> dist/ash-server
-	@echo 'PROJECT_DIR="$$(dirname "$$SCRIPT_DIR")"' >> dist/ash-server
-	@echo '' >> dist/ash-server
-	@echo '# Activate virtual environment and run the Python server' >> dist/ash-server
-	@echo 'cd "$$PROJECT_DIR"' >> dist/ash-server
-	@echo 'source venv/bin/activate' >> dist/ash-server
-	@echo 'exec python3 ash/server.py "$$@"' >> dist/ash-server
-	@chmod +x dist/ash-server
-	@echo "✅ ash-server wrapper built"
+	$(VENV) pyinstaller ash-server.spec
+	@echo "✅ ash-server executable built"
 
 release:
 	./package.sh

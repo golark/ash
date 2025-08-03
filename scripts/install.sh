@@ -58,7 +58,11 @@ else
     exit 1
 fi
 
-if [[ -f "dist/ash-server" ]]; then
+if [[ -d "dist/ash-server" ]]; then
+    cp -r dist/ash-server "$INSTALL_DIR/"
+    chmod +x "$INSTALL_DIR/ash-server/ash-server"
+    print_success "Installed ash-server executable"
+elif [[ -f "dist/ash-server" ]]; then
     cp dist/ash-server "$INSTALL_DIR/"
     chmod +x "$INSTALL_DIR/ash-server"
     print_success "Installed ash-server"
@@ -104,7 +108,12 @@ SYMLINKS_CREATED=false
 if [[ "$OS" == "macos" ]]; then
     if [[ -w "/usr/local/bin" ]]; then
         ln -sf "$INSTALL_DIR/ash-client" /usr/local/bin/ash-client
-        ln -sf "$INSTALL_DIR/ash-server" /usr/local/bin/ash-server
+        # Handle both executable file and directory structures
+        if [[ -f "$INSTALL_DIR/ash-server" ]]; then
+            ln -sf "$INSTALL_DIR/ash-server" /usr/local/bin/ash-server
+        elif [[ -d "$INSTALL_DIR/ash-server" ]]; then
+            ln -sf "$INSTALL_DIR/ash-server/ash-server" /usr/local/bin/ash-server
+        fi
         print_success "Created symlinks in /usr/local/bin"
         SYMLINKS_CREATED=true
     else
@@ -114,13 +123,23 @@ else
     # Linux - try /usr/local/bin first, then ~/.local/bin
     if [[ -w "/usr/local/bin" ]]; then
         ln -sf "$INSTALL_DIR/ash-client" /usr/local/bin/ash-client
-        ln -sf "$INSTALL_DIR/ash-server" /usr/local/bin/ash-server
+        # Handle both executable file and directory structures
+        if [[ -f "$INSTALL_DIR/ash-server" ]]; then
+            ln -sf "$INSTALL_DIR/ash-server" /usr/local/bin/ash-server
+        elif [[ -d "$INSTALL_DIR/ash-server" ]]; then
+            ln -sf "$INSTALL_DIR/ash-server/ash-server" /usr/local/bin/ash-server
+        fi
         print_success "Created symlinks in /usr/local/bin"
         SYMLINKS_CREATED=true
     elif [[ -w "$HOME/.local/bin" ]]; then
         mkdir -p "$HOME/.local/bin"
         ln -sf "$INSTALL_DIR/ash-client" "$HOME/.local/bin/ash-client"
-        ln -sf "$INSTALL_DIR/ash-server" "$HOME/.local/bin/ash-server"
+        # Handle both executable file and directory structures
+        if [[ -f "$INSTALL_DIR/ash-server" ]]; then
+            ln -sf "$INSTALL_DIR/ash-server" "$HOME/.local/bin/ash-server"
+        elif [[ -d "$INSTALL_DIR/ash-server" ]]; then
+            ln -sf "$INSTALL_DIR/ash-server/ash-server" "$HOME/.local/bin/ash-server"
+        fi
         print_success "Created symlinks in ~/.local/bin"
         SYMLINKS_CREATED=true
     else

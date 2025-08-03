@@ -13,7 +13,20 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 
 # Load CLI tools knowledge base
-CLI_TOOLS_KB_PATH = os.path.join(os.path.dirname(__file__), 'cli_tools_kb.json')
+def get_cli_tools_kb_path():
+    """Get the CLI tools KB path, handling both regular and PyInstaller environments"""
+    if getattr(sys, 'frozen', False):
+        # Running as PyInstaller executable
+        base_path = sys._MEIPASS
+        embedded_path = os.path.join(base_path, 'ash', 'cli_tools_kb.json')
+        if os.path.exists(embedded_path):
+            return embedded_path
+    
+    # Fallback to default path
+    default_path = os.path.join(os.path.dirname(__file__), 'cli_tools_kb.json')
+    return default_path
+
+CLI_TOOLS_KB_PATH = get_cli_tools_kb_path()
 try:
     with open(CLI_TOOLS_KB_PATH, 'r', encoding='utf-8') as f:
         CLI_TOOLS_KB = json.load(f)
