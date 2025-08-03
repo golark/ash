@@ -54,6 +54,16 @@ if [[ -f "$HOME/.zshrc" ]]; then
         # Linux sed
         sed -i '/# Ash shell integration/,+1d' "$HOME/.zshrc"
     fi
+    
+    # Remove Ash PATH export lines
+    if [[ "$OS" == "macos" ]]; then
+        # macOS sed requires different syntax
+        sed -i.bak '/# Add ~\/.ash to PATH for Ash CLI tools/,+1d' "$HOME/.zshrc"
+    else
+        # Linux sed
+        sed -i '/# Add ~\/.ash to PATH for Ash CLI tools/,+1d' "$HOME/.zshrc"
+    fi
+    
     print_success "Removed Ash from ~/.zshrc"
 else
     print_warning "~/.zshrc not found"

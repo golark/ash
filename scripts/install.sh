@@ -99,15 +99,16 @@ fi
 
 # Create symlinks in /usr/local/bin (requires sudo on macOS)
 print_status "Creating symlinks..."
+SYMLINKS_CREATED=false
+
 if [[ "$OS" == "macos" ]]; then
     if [[ -w "/usr/local/bin" ]]; then
         ln -sf "$INSTALL_DIR/ash-client" /usr/local/bin/ash-client
         ln -sf "$INSTALL_DIR/ash-server" /usr/local/bin/ash-server
         print_success "Created symlinks in /usr/local/bin"
+        SYMLINKS_CREATED=true
     else
-        print_warning "Cannot write to /usr/local/bin. You may need to run with sudo or add to PATH manually."
-        print_status "Add the following to your ~/.zshrc:"
-        echo "export PATH=\"$INSTALL_DIR:\$PATH\""
+        print_warning "Cannot write to /usr/local/bin. Adding ~/.ash to PATH instead."
     fi
 else
     # Linux - try /usr/local/bin first, then ~/.local/bin
@@ -115,16 +116,42 @@ else
         ln -sf "$INSTALL_DIR/ash-client" /usr/local/bin/ash-client
         ln -sf "$INSTALL_DIR/ash-server" /usr/local/bin/ash-server
         print_success "Created symlinks in /usr/local/bin"
+        SYMLINKS_CREATED=true
     elif [[ -w "$HOME/.local/bin" ]]; then
         mkdir -p "$HOME/.local/bin"
         ln -sf "$INSTALL_DIR/ash-client" "$HOME/.local/bin/ash-client"
         ln -sf "$INSTALL_DIR/ash-server" "$HOME/.local/bin/ash-server"
         print_success "Created symlinks in ~/.local/bin"
-        print_status "Add the following to your ~/.zshrc if not already present:"
-        echo "export PATH=\"\$HOME/.local/bin:\$PATH\""
+        SYMLINKS_CREATED=true
     else
-        print_warning "Cannot create symlinks. Add the following to your ~/.zshrc:"
-        echo "export PATH=\"$INSTALL_DIR:\$PATH\""
+        print_warning "Cannot create symlinks. Adding ~/.ash to PATH instead."
+    fi
+fi
+
+# If symlinks couldn't be created, add .ash to PATH
+if [[ "$SYMLINKS_CREATED" == "false" ]]; then
+    print_status "Adding ~/.ash to PATH..."
+    
+    # Check if .ash is already in PATH
+    if [[ ":$PATH:" == *":$INSTALL_DIR:"* ]]; then
+        print_warning "~/.ash is already in PATH"
+    else
+        # Add to .zshrc if not already present
+        ZSHRC="$HOME/.zshrc"
+        if [[ ! -f "$ZSHRC" ]]; then
+            touch "$ZSHRC"
+            print_status "Created ~/.zshrc"
+        fi
+        
+        # Check if the PATH export is already in .zshrc
+        if grep -q "export PATH.*$INSTALL_DIR" "$ZSHRC"; then
+            print_warning "~/.ash PATH export already configured in ~/.zshrc"
+        else
+            echo "" >> "$ZSHRC"
+            echo "# Add ~/.ash to PATH for Ash CLI tools" >> "$ZSHRC"
+            echo "export PATH=\"$INSTALL_DIR:\$PATH\"" >> "$ZSHRC"
+            print_success "Added ~/.ash to PATH in ~/.zshrc"
+        fi
     fi
 fi
 
@@ -163,6 +190,7 @@ echo "🗑️  Uninstalling Ash..."
 # Remove from .zshrc
 if [[ -f "$HOME/.zshrc" ]]; then
     sed -i.bak '/# Ash shell integration/,+1d' "$HOME/.zshrc"
+    sed -i.bak '/# Add ~\/.ash to PATH for Ash CLI tools/,+1d' "$HOME/.zshrc"
     echo "✅ Removed Ash from ~/.zshrc"
 fi
 
