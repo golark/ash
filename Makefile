@@ -57,7 +57,7 @@ uninstall:
 build: clean venv download-model build-client build-server
 	@echo "✅ Build complete! Using Python server executable."
 	@echo "📁 Built files:"
-	@echo "   - dist/ash-server/ash-server (executable)"
+	@echo "   - dist/server/server (executable)"
 	@echo "   - dist/ash-client (Go binary)"
 	@echo "   - models/qwen2.5-coder-3b-instruct-q4_k_m.gguf (model file)"
 

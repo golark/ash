@@ -58,7 +58,14 @@ else
     exit 1
 fi
 
-if [[ -d "dist/ash-server" ]]; then
+if [[ -d "dist/server" ]]; then
+    cp -r dist/server "$INSTALL_DIR/"
+    chmod +x "$INSTALL_DIR/server/ash-server"
+    print_success "Installed server executable"
+    # Create symlink for ash-server
+    ln -sf "$INSTALL_DIR/server/ash-server" "$INSTALL_DIR/ash-server"
+    print_success "Created ash-server symlink"
+elif [[ -d "dist/ash-server" ]]; then
     cp -r dist/ash-server "$INSTALL_DIR/"
     chmod +x "$INSTALL_DIR/ash-server/ash-server"
     print_success "Installed ash-server executable"
@@ -71,7 +78,7 @@ elif [[ -f "ash-server" ]]; then
     chmod +x "$INSTALL_DIR/ash-server"
     print_success "Installed ash-server"
 else
-    print_error "ash-server binary not found. Please run 'make build' first."
+    print_error "server binary not found. Please run 'make build' first."
     exit 1
 fi
 
@@ -111,6 +118,8 @@ if [[ "$OS" == "macos" ]]; then
         # Handle both executable file and directory structures
         if [[ -f "$INSTALL_DIR/ash-server" ]]; then
             ln -sf "$INSTALL_DIR/ash-server" /usr/local/bin/ash-server
+        elif [[ -d "$INSTALL_DIR/server" ]]; then
+            ln -sf "$INSTALL_DIR/server/ash-server" /usr/local/bin/ash-server
         elif [[ -d "$INSTALL_DIR/ash-server" ]]; then
             ln -sf "$INSTALL_DIR/ash-server/ash-server" /usr/local/bin/ash-server
         fi
@@ -126,6 +135,8 @@ else
         # Handle both executable file and directory structures
         if [[ -f "$INSTALL_DIR/ash-server" ]]; then
             ln -sf "$INSTALL_DIR/ash-server" /usr/local/bin/ash-server
+        elif [[ -d "$INSTALL_DIR/server" ]]; then
+            ln -sf "$INSTALL_DIR/server/ash-server" /usr/local/bin/ash-server
         elif [[ -d "$INSTALL_DIR/ash-server" ]]; then
             ln -sf "$INSTALL_DIR/ash-server/ash-server" /usr/local/bin/ash-server
         fi
@@ -137,6 +148,8 @@ else
         # Handle both executable file and directory structures
         if [[ -f "$INSTALL_DIR/ash-server" ]]; then
             ln -sf "$INSTALL_DIR/ash-server" "$HOME/.local/bin/ash-server"
+        elif [[ -d "$INSTALL_DIR/server" ]]; then
+            ln -sf "$INSTALL_DIR/server/ash-server" "$HOME/.local/bin/ash-server"
         elif [[ -d "$INSTALL_DIR/ash-server" ]]; then
             ln -sf "$INSTALL_DIR/ash-server/ash-server" "$HOME/.local/bin/ash-server"
         fi
