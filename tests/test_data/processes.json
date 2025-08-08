@@ -1,0 +1,12 @@
+[
+  {"query": "start nginx server in background", "expected": ["nohup nginx &", "nohup nginx > nginx.log 2>&1 &"], "points": 3},
+  {"query": "run python script cars.py in background", "expected": ["python cars.py &", "nohup python cars.py &", "nohup python cars.py 2>&1 &"], "points": 3},
+  {"query": "kill process with pid 1234", "expected": ["kill 1234", "kill -9 1234"], "points": 3},
+  {"query": "kill all python processes", "expected": ["pkill python", "pkill -f python", "killall python"], "points": 3},
+  {"query": "kill nginx server process", "expected": ["pkill nginx", "killall nginx", "pkill -f nginx"], "points": 3},
+  {"query": "show all running processes", "expected": ["ps aux", "ps -ef", "top"], "points": 3},
+  {"query": "show process tree", "expected": ["pstree", "ps -ejH", "ps -ejH | grep -v grep"], "points": 3},
+  {"query": "run command in background", "expected": ["command &", "nohup command &"], "points": 3},
+  {"query": "stop background job number 1", "expected": ["kill -9 1",	"kill %1", "kill -9 %1"], "points": 3},
+  {"query": "bring background job 1 to foreground", "expected": ["fg %1", "fg 1"], "points": 3}
+]

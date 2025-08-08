@@ -1,0 +1,12 @@
+[
+  {"query": "move file document.txt to backup folder", "expected": ["mv document.txt backup/", "mv document.txt backup"], "points": 3},
+  {"query": "copy file config.yaml to configs directory", "expected": ["cp config.yaml configs/", "cp config.yaml configs"], "points": 3},
+  {"query": "move folder logs to archive directory", "expected": ["mv logs archive/", "mv logs archive"], "points": 3},
+  {"query": "copy folder src to backup directory", "expected": ["cp -r src backup/", "cp -r src backup"], "points": 3},
+  {"query": "move file data.csv to parent directory", "expected": ["mv data.csv ..", "mv data.csv ../"], "points": 3},
+  {"query": "copy file script.sh to home directory", "expected": ["cp script.sh ~/", "cp script.sh $HOME/"], "points": 3},
+  {"query": "move all txt files to documents folder", "expected": ["mv *.txt documents/", "mv *.txt documents"], "points": 3},
+  {"query": "copy all python files to scripts directory", "expected": ["cp *.py scripts/", "cp *.py scripts"], "points": 3},
+  {"query": "move folder project to desktop", "expected": ["mv project ~/Desktop/", "mv project ~/Desktop"], "points": 3},
+  {"query": "copy folder images to under backup", "expected": ["cp -r images backup", "cp -r images backup/", "cp -r images ./backup"], "points": 3}
+]

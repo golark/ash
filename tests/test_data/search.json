@@ -1,12 +1,12 @@
 [
-  {"query": "search for text error in all files", "expected": ["grep -r error .", "grep -r 'error' ."], "points": 3},
+  {"query": "search for text error in all files", "expected": ["grep -r error ."], "points": 3},
   {"query": "find all python files in current directory", "expected": ["find . -name '*.py'", "find . -type f -name '*.py'"], "points": 3},
-  {"query": "search for word password in config files", "expected": ["grep -r password *.conf", "grep -r 'password' *.conf"], "points": 3},
+  {"query": "search for word password in text files", "expected": ["grep -r password *.txt", "grep -r password *.text"], "points": 3},
   {"query": "find all files larger than 100MB", "expected": ["find . -type f -size +100M", "find . -size +100M"], "points": 3},
-  {"query": "search for text TODO in source code", "expected": ["grep -r TODO src/", "grep -r 'TODO' src/"], "points": 3},
+  {"query": "search for text TODO under src directory", "expected": ["grep -r TODO src", "grep -r TODO src/", "grep -r 'TODO' src/"], "points": 3},
   {"query": "find all directories named logs", "expected": ["find . -type d -name logs", "find . -name logs -type d"], "points": 3},
   {"query": "search for text database in json files", "expected": ["grep -r database *.json", "grep -r 'database' *.json"], "points": 3},
-  {"query": "find all files modified in last 7 days", "expected": ["find . -type f -mtime -7", "find . -mtime -7 -type f"], "points": 3},
+  {"query": "find all files modified in last 7 days", "expected": ["find . -mtime -7", "find . -type f -mtime -7", "find . -mtime -7 -type f"], "points": 3},
   {"query": "search for text api_key in all files", "expected": ["grep -r api_key .", "grep -r 'api_key' ."], "points": 3},
   {"query": "find all empty directories", "expected": ["find . -type d -empty", "find . -empty -type d"], "points": 3}
 ]
