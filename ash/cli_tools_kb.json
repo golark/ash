@@ -264,5 +264,57 @@
     ],
     "alternatives": ["brew search", "manual web search"],
     "caveats": "The 'brew cask search' command was deprecated. Use 'brew search --cask' instead."
+  },
+  {
+    "use_case": "Manage Homebrew tap repositories",
+    "best_tool": "brew tap",
+    "description": "Add, list, or remove Homebrew tap repositories. Taps are additional repositories that provide formulas and casks.",
+    "examples": [
+      "brew tap",
+      "brew tap user/repo",
+      "brew tap homebrew/cask-versions",
+      "brew tap homebrew/core",
+      "brew untap user/repo"
+    ],
+    "recommended_flags": [
+      {"flag": "no flags", "description": "List all tapped repositories"},
+      {"flag": "user/repo", "description": "Add a tap repository (e.g., homebrew/cask-versions)"},
+      {"flag": "--full", "description": "Show full repository names"},
+      {"flag": "--repair", "description": "Repair tap repositories"}
+    ],
+    "alternatives": ["manual git clone", "direct formula installation"],
+    "caveats": "Taps are stored in /usr/local/Homebrew/Library/Taps (Intel) or /opt/homebrew/Library/Taps (Apple Silicon). Common taps include homebrew/core (default), homebrew/cask (default), and homebrew/cask-versions (for older versions)."
+  },
+  {
+    "use_case": "Remove Homebrew tap repositories",
+    "best_tool": "brew untap",
+    "description": "Remove Homebrew tap repositories that are no longer needed.",
+    "examples": [
+      "brew untap user/repo",
+      "brew untap homebrew/cask-versions",
+      "brew untap homebrew/core"
+    ],
+    "recommended_flags": [
+      {"flag": "user/repo", "description": "Remove specific tap repository"},
+      {"flag": "--force", "description": "Force removal even if formulas are installed"}
+    ],
+    "alternatives": ["manual git removal", "brew tap --repair"],
+    "caveats": "Be careful when removing taps as it may break installed formulas. Use 'brew list' to check what's installed from a tap before removing it."
+  },
+  {
+    "use_case": "Install specific versions with Homebrew",
+    "best_tool": "brew tap homebrew/cask-versions",
+    "description": "Add the cask-versions tap to access older versions of applications.",
+    "examples": [
+      "brew tap homebrew/cask-versions",
+      "brew install --cask firefox@115.0",
+      "brew install --cask google-chrome@119"
+    ],
+    "recommended_flags": [
+      {"flag": "homebrew/cask-versions", "description": "Add the official cask-versions repository"},
+      {"flag": "--full", "description": "Show full repository name"}
+    ],
+    "alternatives": ["manual download", "direct download from vendor"],
+    "caveats": "The cask-versions tap provides older versions of applications. Use with caution as older versions may have security vulnerabilities. Format is typically 'application@version'."
   }
 ] 

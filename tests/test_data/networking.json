@@ -1,0 +1,22 @@
+[
+  {"query": "ping host", "expected": ["ping", "ping hostname", "ping -c 4 hostname"], "points": 3},
+  {"query": "ping google.com", "expected": ["ping google.com", "ping -c 4 google.com"], "points": 3},
+  {"query": "ping server", "expected": ["ping server", "ping -c 4 server"], "points": 3},
+  {"query": "download file", "expected": ["wget", "wget url", "curl -O url"], "points": 3},
+  {"query": "download file from url", "expected": ["wget url", "curl -O url", "curl url"], "points": 3},
+  {"query": "curl url", "expected": ["curl", "curl url"], "points": 3},
+  {"query": "connect via ssh", "expected": ["ssh", "ssh user@host", "ssh host"], "points": 3},
+  {"query": "ssh to server", "expected": ["ssh server", "ssh user@server"], "points": 3},
+  {"query": "copy file to remote", "expected": ["scp", "scp file user@host:", "scp file user@host:/path"], "points": 3},
+  {"query": "scp file to server", "expected": ["scp file server", "scp file user@server:/path"], "points": 3},
+  {"query": "show network connections", "expected": ["netstat", "netstat -tuln", "ss"], "points": 3},
+  {"query": "show network interfaces", "expected": ["ifconfig", "ip addr", "ip link"], "points": 3},
+  {"query": "dns lookup", "expected": ["nslookup", "nslookup domain", "dig domain"], "points": 3},
+  {"query": "dig domain", "expected": ["dig", "dig domain", "dig domain.com"], "points": 3},
+  {"query": "trace route", "expected": ["traceroute", "traceroute host", "traceroute domain.com"], "points": 3},
+  {"query": "show network status", "expected": ["netstat", "netstat -i", "ip addr"], "points": 3},
+  {"query": "check port", "expected": ["netstat -tuln", "ss -tuln", "lsof -i"], "points": 3},
+  {"query": "test connectivity", "expected": ["ping", "ping -c 1 host", "telnet host port"], "points": 3},
+  {"query": "get ip address", "expected": ["ifconfig", "ip addr", "hostname -I"], "points": 3},
+  {"query": "resolve hostname", "expected": ["nslookup", "dig", "host"], "points": 3}
+]
