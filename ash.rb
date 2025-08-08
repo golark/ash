@@ -1,12 +1,12 @@
 class Ash < Formula
   desc "AI-powered shell assistant that translates natural language to commands"
   homepage "https://github.com/golark/ash"
-  version "0.1.0"
+  version "0.1.2"
   license "Apache-2.0"
   
-  # GitHub release URL for v0.1.0
-  url "https://github.com/golark/ash/releases/download/v0.1.0/ash-cli-0.1.0.tar.gz"
-  sha256 "17e52f33222cd23017f882f38aa1457cf47c5a525fd2527b3efbec7b7c43b424"
+  # GitHub release URL for v0.1.2
+  url "https://github.com/golark/ash/releases/download/v0.1.2/ash-0.1.2.tar.gz"
+  sha256 "TBD"
   
   depends_on :macos
   
@@ -18,7 +18,8 @@ class Ash < Formula
     # Install shell integration
     pkgshare.install "ash.zsh"
     
-    # The ash-install script will create the .ash directory
+    # Install _internal directory (required for ash-server)
+    libexec.install "_internal"
     
     # Create installation script
     (bin/"ash-install").write <<~EOS
@@ -33,6 +34,19 @@ class Ash < Formula
       # Copy shell integration to .ash directory
       cp #{pkgshare}/ash.zsh "$ASH_DIR/"
       echo "✅ Copied shell integration to $ASH_DIR"
+      
+      # Download the AI model if not already present
+      MODEL_DIR="$ASH_DIR/models"
+      MODEL_FILE="$MODEL_DIR/qwen2.5-coder-3b-instruct-q4_k_m.gguf"
+      
+      if [[ ! -f "$MODEL_FILE" ]]; then
+        echo "📥 Downloading AI model (this may take a few minutes)..."
+        mkdir -p "$MODEL_DIR"
+        curl -L -o "$MODEL_FILE" "https://huggingface.co/Qwen/Qwen2.5-Coder-3B-Instruct-GGUF/resolve/main/qwen2.5-coder-3b-instruct-q4_k_m.gguf"
+        echo "✅ Model downloaded successfully"
+      else
+        echo "✅ AI model already exists"
+      fi
       
       # Add to PATH if not present
       if ! grep -q 'export PATH="#{HOMEBREW_PREFIX}/bin:$PATH"' ~/.zshrc; then

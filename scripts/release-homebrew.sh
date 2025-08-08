@@ -4,8 +4,8 @@ set -e
 # Configuration
 VERSION="${VERSION:-$(git describe --tags --abbrev=0 | sed 's/^v//')}"
 REPO_NAME="homebrew-ash"
-TAP_REPO="cjan/$REPO_NAME"
-GITHUB_USER="cjan"
+TAP_REPO="golark/$REPO_NAME"
+GITHUB_USER="golark"
 
 echo "🍺 Homebrew Release Process for Ash v${VERSION}"
 echo "================================================"
@@ -29,8 +29,8 @@ echo "🏷️  Tap Repository: $TAP_REPO"
 # Step 1: Build and create Homebrew package
 echo ""
 echo "🔨 Step 1: Building and packaging..."
-make build
-make homebrew
+#make build
+#make homebrew
 
 # Step 2: Get SHA256 from the package
 PACKAGE_FILE="dist-package/ash-${VERSION}.tar.gz"
@@ -44,6 +44,7 @@ echo "🔐 SHA256: $SHA256"
 
 # Step 3: Create temporary directory for tap repository
 TEMP_DIR=$(mktemp -d)
+ORIGINAL_DIR=$(pwd)
 echo ""
 echo "📁 Step 2: Setting up tap repository in $TEMP_DIR"
 
@@ -74,7 +75,7 @@ echo ""
 echo "📝 Step 3: Updating Homebrew formula..."
 
 # Copy the formula from the main repository
-cp "$OLDPWD/ash.rb" .
+cp "$ORIGINAL_DIR/ash.rb" .
 
 # Update the formula with new version, URL, and SHA256
 RELEASE_URL="https://github.com/golark/ash/releases/download/v${VERSION}/ash-${VERSION}.tar.gz"

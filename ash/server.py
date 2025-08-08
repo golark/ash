@@ -47,9 +47,14 @@ except ImportError:
 def get_model_path():
     """Get the model path, handling both regular and PyInstaller environments"""
     # First check environment variable
-    env_path = os.environ.get('ash_MODEL_PATH')
+    env_path = os.environ.get('ASH_MODEL_PATH')
     if env_path and os.path.exists(env_path):
         return env_path
+    
+    # Check user's .ash directory (Homebrew installation)
+    home_ash_path = os.path.expanduser('~/.ash/models/qwen2.5-coder-3b-instruct-q4_k_m.gguf')
+    if os.path.exists(home_ash_path):
+        return home_ash_path
     
     # Check if running as PyInstaller executable
     if getattr(sys, 'frozen', False):

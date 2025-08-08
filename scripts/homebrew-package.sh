@@ -29,6 +29,11 @@ echo "📦 Copying files to package..."
 cp dist/ash-client "$DIST_DIR/$PACKAGE_NAME/"
 cp dist/server/ash-server "$DIST_DIR/$PACKAGE_NAME/"
 
+# Copy _internal directory (required for ash-server to run) but exclude the model file
+cp -r dist/server/_internal "$DIST_DIR/$PACKAGE_NAME/"
+# Remove the model file from the package (it will be downloaded separately)
+rm -f "$DIST_DIR/$PACKAGE_NAME/_internal/models/qwen2.5-coder-3b-instruct-q4_k_m.gguf"
+
 # Copy shell integration files
 cp ash/ash.zsh "$DIST_DIR/$PACKAGE_NAME/"
 cp ash/cli_tools_kb.json "$DIST_DIR/$PACKAGE_NAME/"
