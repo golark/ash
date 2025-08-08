@@ -1,0 +1,13 @@
+[
+  {"query": "show me all kubernetes pods", "expected": ["kubectl get pods", "kubectl get pods -A"], "points": 3},
+  {"query": "list kubernetes deployments", "expected": ["kubectl get deployments", "kubectl get deployments -A"], "points": 3},
+  {"query": "show kubernetes services in namespace human-resources", "expected": ["kubectl get services -n human-resources", "kubectl get svc -n human-resources", "kubectl get services -A -n human-resources"], "points": 3},
+  {"query": "list kubernetes nodes", "expected": ["kubectl get nodes", "kubectl get nodes -o wide"], "points": 3},
+  {"query": "show logs for kubernetes pod myapp-pod", "expected": ["kubectl logs myapp-pod", "kubectl logs -f myapp-pod"], "points": 3},
+  {"query": "execute bash in kubernetes pod myapp-pod", "expected": ["kubectl exec -it myapp-pod -- bash","kubectl exec -it myapp-pod -- /bin/bash", "kubectl exec -it myapp-pod -- /bin/sh"], "points": 3},
+  {"query": "apply kubernetes file.yaml", "expected": ["kubectl apply -f file.yaml", "kubectl apply -f directory/"], "points": 3},
+  {"query": "delete kubernetes pod myapp-pod", "expected": ["kubectl delete pod myapp-pod", "kubectl delete pod myapp-pod --force"], "points": 3},
+  {"query": "describe kubernetes pod myapp-pod", "expected": ["kubectl describe pod myapp-pod"], "points": 3},
+  {"query": "forward port 8080 to 80 from kubernetes pod myapp-pod", "expected": ["kubectl port-forward myapp-pod 8080:80", "kubectl port-forward pod/myapp-pod 8080:80"], "points": 3},
+  {"query": "list kubernetes namespaces", "expected": ["kubectl get namespaces", "kubectl get ns"], "points": 3}
+]

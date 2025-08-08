@@ -1,0 +1,12 @@
+[
+  {"query": "list all docker containers", "expected": ["docker ps", "docker ps -a"], "points": 3},
+  {"query": "show running docker containers", "expected": ["docker ps", "docker container ls"], "points": 3},
+  {"query": "list all docker images", "expected": ["docker images", "docker image ls"], "points": 3},
+  {"query": "run docker container nginx on port 8080", "expected": ["docker run -p 8080:80 nginx", "docker run -d -p 8080:80 nginx"], "points": 3},
+  {"query": "run docker container mysql with password mypass", "expected": ["docker run -e MYSQL_ROOT_PASSWORD=mypass mysql", "docker run -d -e MYSQL_ROOT_PASSWORD=mypass mysql"], "points": 3},
+  {"query": "execute bash in docker container myapp", "expected": ["docker exec -it myapp bash", "docker exec -it myapp /bin/bash"], "points": 3},
+  {"query": "show logs for docker container myapp", "expected": ["docker logs myapp", "docker logs -f myapp"], "points": 3},
+  {"query": "stop docker container myapp", "expected": ["docker stop myapp", "docker container stop myapp"], "points": 3},
+  {"query": "remove docker container myapp", "expected": ["docker rm myapp", "docker container rm myapp"], "points": 3},
+  {"query": "build docker image from Dockerfile", "expected": ["docker build -t myimage .", "docker build -t myimage:latest ."], "points": 3}
+]
