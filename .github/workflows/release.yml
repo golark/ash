@@ -45,29 +45,25 @@ jobs:
       run: |
         make build
     
-    - name: Create package
+    - name: Create release package
       run: |
-        VERSION=${GITHUB_REF#refs/tags/}
-        PACKAGE_NAME="qsh-cli-${VERSION}-${PLATFORM}-${ARCH}"
-        
-        mkdir -p "dist-package/$PACKAGE_NAME"
-        cp dist/ash-client "dist-package/$PACKAGE_NAME/"
-        cp dist/ash-server "dist-package/$PACKAGE_NAME/"
-        cp ash/ash.zsh "dist-package/$PACKAGE_NAME/"
-        cp ./scripts/install.sh "dist-package/$PACKAGE_NAME/"
-        cp README.md "dist-package/$PACKAGE_NAME/"
-        
-        cd dist-package
-        tar -czf "${PACKAGE_NAME}.tar.gz" "$PACKAGE_NAME"
-        zip -r "${PACKAGE_NAME}.zip" "$PACKAGE_NAME"
+        make release
       env:
+        VERSION: ${GITHUB_REF#refs/tags/}
         PLATFORM: ${{ matrix.platform }}
         ARCH: ${{ matrix.arch }}
+    
+    - name: Create Homebrew package
+      run: |
+        make homebrew
+      env:
+        VERSION: ${GITHUB_REF#refs/tags/}
+      if: matrix.os == 'macos-latest'
     
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: qsh-${{ matrix.platform }}-${{ matrix.arch }}
+        name: ash-${{ matrix.platform }}-${{ matrix.arch }}
         path: dist-package/*.tar.gz
         retention-days: 30
 
@@ -87,6 +83,35 @@ jobs:
           **/*.tar.gz
           **/*.zip
         generate_release_notes: true
+        body: |
+          ## Ash v${{ github.ref_name }}
+          
+          AI-powered shell assistant that translates natural language to commands.
+          
+          ### Installation
+          
+          **Homebrew (macOS):**
+          ```bash
+          brew tap cjan/ash/ash
+          brew install ash
+          ash-install
+          ```
+          
+          **Manual:**
+          ```bash
+          tar -xzf ash-${{ github.ref_name }}-*.tar.gz
+          cd ash-${{ github.ref_name }}-*
+          ./install.sh
+          ```
+          
+          ### Features
+          - Local AI model (Qwen2.5-Coder-3B-Quantized)
+          - Natural language to shell commands
+          - Zsh integration with Ctrl+G toggle
+          - Self-contained installation
+          
+          ### SHA256 (Homebrew package)
+          `${{ env.SHA256 }}`
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         # Alternative: Use PAT if GITHUB_TOKEN doesn't work

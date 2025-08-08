@@ -16,6 +16,7 @@ help:
 	@echo "  quantize  - Set up model quantization"
 	@echo "  clean     - Clean build artifacts"
 	@echo "  release   - Create release package"
+	@echo "  homebrew  - Create Homebrew package"
 	@echo ""
 	@echo "Custom Model Usage:"
 	@echo "  ash-server --model-path /path/to/model.gguf"
@@ -72,3 +73,6 @@ build-server:
 
 release:
 	./package.sh
+
+homebrew: build
+	./scripts/homebrew-package.sh

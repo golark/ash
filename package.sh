@@ -2,11 +2,13 @@
 set -e
 
 # Configuration
-VERSION="0.1.0"
-PACKAGE_NAME="ash-cli-${VERSION}"
+VERSION="${VERSION:-0.1.0}"
+PLATFORM="${PLATFORM:-$(uname -s | tr '[:upper:]' '[:lower:]')}"
+ARCH="${ARCH:-$(uname -m)}"
+PACKAGE_NAME="ash-cli-${VERSION}-${PLATFORM}-${ARCH}"
 DIST_DIR="dist-package"
 
-echo "🚀 Packaging ASH CLI v${VERSION}..."
+echo "🚀 Packaging ASH CLI v${VERSION} for ${PLATFORM}-${ARCH}..."
 
 # Clean and build
 make clean
