@@ -18,11 +18,11 @@ mkdir -p "$DIST_DIR/$PACKAGE_NAME"
 
 # Copy binaries
 cp dist/ash-client "$DIST_DIR/$PACKAGE_NAME/"
-# Handle both executable file and directory structures
-if [[ -d "dist/ash-server" ]]; then
-    cp -r dist/ash-server "$DIST_DIR/$PACKAGE_NAME/"
-elif [[ -f "dist/ash-server" ]]; then
-    cp dist/ash-server "$DIST_DIR/$PACKAGE_NAME/"
+# Copy server executable (PyInstaller creates dist/server/ash-server)
+if [[ -f "dist/server/ash-server" ]]; then
+    cp dist/server/ash-server "$DIST_DIR/$PACKAGE_NAME/"
+elif [[ -d "dist/server" ]]; then
+    cp -r dist/server "$DIST_DIR/$PACKAGE_NAME/"
 else
     echo "Error: ash-server not found. Please run 'make build' first."
     exit 1
