@@ -72,7 +72,7 @@ build-server:
 	@echo "✅ ash-server executable built"
 
 release:
-	./package.sh
+	./scripts/package.sh
 
 homebrew: build
 	./scripts/homebrew-package.sh
