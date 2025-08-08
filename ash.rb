@@ -1,12 +1,12 @@
 class Ash < Formula
   desc "AI-powered shell assistant that translates natural language to commands"
   homepage "https://github.com/golark/ash"
-  version "0.1.2"
+  version "0.1.3"
   license "Apache-2.0"
   
   # GitHub release URL for v0.1.2
-  url "https://github.com/golark/ash/releases/download/v0.1.2/ash-0.1.2.tar.gz"
-  sha256 "TBD"
+  url "https://github.com/golark/ash/releases/download/v0.1.3/ash-0.1.3.tar.gz"
+  sha256 "2698c24539d692fa75cf335d908e88b79e91bfd9c385ddc1d6ca2c03bf8fab45"
   
   depends_on :macos
   
@@ -19,7 +19,7 @@ class Ash < Formula
     pkgshare.install "ash.zsh"
     
     # Install _internal directory (required for ash-server)
-    libexec.install "_internal"
+    bin.install "_internal"
     
     # Create installation script
     (bin/"ash-install").write <<~EOS
