@@ -1,0 +1,49 @@
+{
+  "metadata": {
+    "description": "Git Command Generation Test Cases - 25 Most Used Commands",
+    "version": "1.0",
+    "scoring": {
+      "3": "Basic Git commands (daily usage)",
+      "2": "Intermediate Git commands (weekly usage)", 
+      "1": "Advanced Git commands (monthly usage)"
+    }
+  },
+  "tests": [
+    {"query": "check git status", "expected": ["git status"], "points": 3},
+    {"query": "add all files to git", "expected": ["git add .", "git add -A"], "points": 3},
+    {"query": "commit changes with message", "expected": ["git commit -m", "git commit -m 'Update'"], "points": 3},
+    {"query": "push changes to remote", "expected": ["git push", "git push origin main"], "points": 3},
+    {"query": "pull latest changes", "expected": ["git pull", "git pull origin main"], "points": 3},
+    {"query": "show git log", "expected": ["git log", "git log --oneline"], "points": 3},
+    {"query": "clone repository", "expected": ["git clone", "git clone https://github.com/user/repo.git"], "points": 3},
+    {"query": "initialize git repository", "expected": ["git init"], "points": 3},
+    {"query": "create new branch", "expected": ["git branch", "git checkout -b", "git switch -c"], "points": 2},
+    {"query": "switch to branch", "expected": ["git checkout", "git switch"], "points": 2},
+    {"query": "merge branch into current", "expected": ["git merge", "git merge main"], "points": 2},
+    {"query": "stash changes", "expected": ["git stash", "git stash push"], "points": 2},
+    {"query": "apply stashed changes", "expected": ["git stash pop", "git stash apply"], "points": 2},
+    {"query": "git show differences", "expected": ["git diff", "git diff HEAD"], "points": 2},
+    {"query": "reset file to last commit", "expected": ["git checkout --", "git restore", "git reset --hard HEAD~1"], "points": 2},
+    {"query": "show remote repositories", "expected": ["git remote -v"], "points": 2},
+    {"query": "fetch from remote", "expected": ["git fetch", "git fetch origin"], "points": 2},
+    {"query": "show branch information", "expected": ["git branch -a", "git branch -r"], "points": 2},
+    {"query": "show stash list", "expected": ["git stash list"], "points": 2},
+    {"query": "show current branch", "expected": ["git branch --show-current", "git rev-parse --abbrev-ref HEAD"], "points": 2},
+    {"query": "undo last commit", "expected": ["git reset --soft HEAD~1", "git revert HEAD", "git reset --hard HEAD~1"], "points": 1},
+    {"query": "rebase current branch", "expected": ["git rebase", "git rebase main"], "points": 1},
+    {"query": "cherry pick commit", "expected": ["git cherry-pick", "git cherry-pick abc123"], "points": 1},
+    {"query": "delete branch", "expected": ["git branch -d", "git branch -D"], "points": 1},
+    {"query": "add remote repository", "expected": ["git remote add", "git remote add origin"], "points": 1},
+    {"query": "show commit history", "expected": ["git log", "git log --oneline", "git log --graph"], "points": 1},
+    {"query": "add submodule", "expected": ["git submodule add", "git submodule add https://github.com/user/repo.git"], "points": 1},
+    {"query": "update submodules", "expected": ["git submodule update", "git submodule update --init"], "points": 1},
+    {"query": "fetch submodules recursively", "expected": ["git submodule update --init --recursive"], "points": 1}
+  ],
+  "summary": {
+    "total_tests": 35,
+    "basic_tests": 8,
+    "intermediate_tests": 11,
+    "advanced_tests": 16,
+    "total_points": 57
+  }
+}
