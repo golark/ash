@@ -1,0 +1,14 @@
+[
+  {"query": "create python virtual environment", "expected": ["python -m venv venv", "python3 -m venv venv", "virtualenv venv"], "points": 3},
+  {"query": "create virtual environment named myproject", "expected": ["python -m venv myproject", "python3 -m venv myproject", "virtualenv myproject"], "points": 3},
+  {"query": "activate python virtual environment", "expected": ["source venv/bin/activate", "source venv/Scripts/activate", ". venv/bin/activate"], "points": 3},
+  {"query": "deactivate python virtual environment", "expected": ["deactivate"], "points": 3},
+  {"query": "install python package requests", "expected": ["pip install requests", "pip3 install requests"], "points": 3},
+  {"query": "install python packages from requirements.txt", "expected": ["pip install -r requirements.txt", "pip3 install -r requirements.txt"], "points": 3},
+  {"query": "uninstall python package requests", "expected": ["pip uninstall requests", "pip3 uninstall requests"], "points": 3},
+  {"query": "list installed python packages", "expected": ["pip list", "pip3 list", "pip freeze"], "points": 3},
+  {"query": "upgrade python package requests", "expected": ["pip install --upgrade requests", "pip3 install --upgrade requests"], "points": 3},
+  {"query": "create requirements.txt from current environment", "expected": ["pip freeze > requirements.txt", "pip3 freeze > requirements.txt"], "points": 3},
+  {"query": "check python version", "expected": ["python --version", "python3 --version", "python -V"], "points": 3},
+  {"query": "run python script main.py", "expected": ["python main.py", "python3 main.py"], "points": 3}
+]

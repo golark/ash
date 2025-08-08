@@ -1,0 +1,8 @@
+[
+  {"query": "show current date and time", "expected": ["date", "date '+%Y-%m-%d %H:%M:%S'"], "points": 3},
+  {"query": "get current date in YYYY-MM-DD format", "expected": ["date '+%Y-%m-%d'", "date +%Y-%m-%d"], "points": 3},
+  {"query": "show date in month day year format", "expected": ["date +%m/%d/%Y","date '+%B %d, %Y'", "date +%B %d, %Y"], "points": 3},
+  {"query": "show date in ISO format", "expected": ["date -I", "date '+%Y-%m-%d'"], "points": 3},
+  {"query": "get current timezone", "expected": ["date '+%Z'", "date +%Z", "timedatectl"], "points": 3},
+  {"query": "get current year", "expected": ["date '+%Y'", "date +%Y"], "points": 3}
+]
