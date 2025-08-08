@@ -1,48 +1,37 @@
-{
-    "metadata": {
-      "description": "Simplified AI Command Generation Test Cases",
-      "version": "1.0",
-      "scoring": {
-        "3": "Basic commands (daily usage)",
-        "2": "Intermediate commands (weekly usage)", 
-        "1": "Advanced commands (monthly usage)"
-      }
-    },
-    "tests": [
-      {
-        "query": "list files",
-        "expected": "ls",
-        "points": 3
-      },
-      {
-        "query": "show current directory", 
-        "expected": "pwd",
-        "points": 3
-      },
-      {
-        "query": "change to home directory",
-        "expected": "cd ~",
-        "points": 3
-      },
-      {
-        "query": "create directory",
-        "expected": "mkdir",
-        "points": 3
-      },
-      {
-        "query": "remove file",
-        "expected": "rm",
-        "points": 3
-      },
-      {
-        "query": "copy file",
-        "expected": "cp",
-        "points": 3
-      },
-      {
-        "query": "change directory to x",
-        "expected": "cd x",
-        "points": 3
-      }
-    ]
-}
+[
+  {
+    "query": "list files",
+    "expected": "ls",
+    "points": 3
+  },
+  {
+    "query": "show current directory", 
+    "expected": "pwd",
+    "points": 3
+  },
+  {
+    "query": "change to home directory",
+    "expected": "cd ~",
+    "points": 3
+  },
+  {
+    "query": "create directory",
+    "expected": "mkdir",
+    "points": 3
+  },
+  {
+    "query": "remove file",
+    "expected": "rm",
+    "points": 3
+  },
+  {
+    "query": "copy file",
+    "expected": "cp",
+    "points": 3
+  },
+  {
+    "query": "change directory to x",
+    "expected": "cd x",
+    "points": 3
+  }
+]

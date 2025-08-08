@@ -1,29 +1,7 @@
-{
-  "metadata": {
-    "description": "Homebrew (brew) Command Generation Test Cases - Most Used Commands",
-    "version": "1.0",
-    "scoring": {
-      "3": "Basic brew commands (daily usage)",
-      "2": "Intermediate brew commands (weekly usage)", 
-      "1": "Advanced brew commands (monthly usage)"
-    }
-  },
-  "tests": [
-    {"query": "brew install python", "expected": ["brew install python", "brew install python@3.11"], "points": 3},
-    {"query": "brew install node", "expected": ["brew install node", "brew install node@18"], "points": 3},
-    {"query": "brew install git", "expected": ["brew install git"], "points": 3},
-    {"query": "brew search package", "expected": ["brew search", "brew search package_name"], "points": 3},
-    {"query": "brew list installed packages", "expected": ["brew list", "brew list --formula", "brew list --cask"], "points": 3},
-    {"query": "brew update homebrew", "expected": ["brew update"], "points": 3},
-    {"query": "brew upgrade packages", "expected": ["brew upgrade", "brew upgrade package_name"], "points": 3},
-    {"query": "brew uninstall package", "expected": ["brew uninstall", "brew uninstall package_name"], "points": 3},
-    {"query": "brew check homebrew", "expected": ["brew doctor"], "points": 3}
-  ],
-  "summary": {
-    "total_tests": 10,
-    "basic_tests": 10,
-    "intermediate_tests": 0,
-    "advanced_tests": 0,
-    "total_points": 30
-  }
-}
+[
+  {"query": "install python3.12 using brew", "expected": ["brew install python3.12", "brew install python@3.12"], "points": 3},
+  {"query": "search curl using brew", "expected": ["brew search", "brew search package_name"], "points": 3},
+  {"query": "list installed packages for brew", "expected": ["brew list", "brew list --formula", "brew list --cask"], "points": 3},
+  {"query": "upgrade git using brew", "expected": ["brew upgrade git", "brew upgrade package_name"], "points": 3},
+  {"query": "tapped brew repositories", "expected": ["brew tap", "brew tap user/repo"], "points": 3},
+  {"query": "uninstall git using brew", "expected": ["brew uninstall git"], "points": 3}]

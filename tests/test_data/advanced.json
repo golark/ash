@@ -1,31 +1,17 @@
-{
-  "metadata": {
-    "description": "Advanced AI Command Generation Test Cases",
-    "version": "1.0",
-    "scoring": {
-      "1": "Advanced commands (monthly or rare usage)"
-    }
-  },
-  "tests": [
-    {"query": "find and delete all .DS_Store files recursively from the current directory", "expected": ["find . -name '.DS_Store' -delete", "find . -type f -name '.DS_Store' -exec rm {} +"], "points": 1},
-    {"query": "find all files larger than 1GB and list their paths", "expected": ["find . -type f -size +1G"], "points": 1},
-    {"query": "recursively change permissions of all .sh files to 755", "expected": ["find . -type f -name '*.sh' -exec chmod 755 {} +"], "points": 1},
-    {"query": "archive and compress the /var/log directory into a tar.gz file named logs_backup.tar.gz", "expected": ["tar -czvf logs_backup.tar.gz /var/log", "tar -czf logs_backup.tar.gz /var/log"], "points": 1},
-    {"query": "replace all occurrences of 'foo' with 'bar' in all .txt files in the current directory and subdirectories", "expected": ["find . -type f -name '*.txt' -exec sed -i '' 's/foo/bar/g' {} +", "find . -type f -name '*.txt' -exec sed -i 's/foo/bar/g' {} +"], "points": 1},
-    {"query": "show the 10 largest files in the current directory and subdirectories", "expected": ["find . -type f -exec du -h {} + | sort -hr | head -n 10"], "points": 1},
-    {"query": "find all symbolic links in /usr/local/bin", "expected": ["find /usr/local/bin -type l"], "points": 1},
-    {"query": "recursively change ownership of /srv/www to user 'www-data' and group 'www-data'", "expected": ["chown -R www-data:www-data /srv/www", "sudo chown -R www-data:www-data /srv/www"], "points": 1},
-    {"query": "list all open network ports and the processes using them", "expected": ["lsof -i -P -n", "netstat -tulnp", "ss -tulnp"], "points": 1},
-    {"query": "find and remove all empty directories from the current directory recursively", "expected": ["find . -type d -empty -delete"], "points": 1},
-    {"query": "show the number of files in each subdirectory of the current directory", "expected": ["find . -type f | awk -F/ '{print $2}' | sort | uniq -c"], "points": 1},
-    {"query": "backup all .conf files in /etc to /backup/etc_conf_backup.tar.gz", "expected": ["tar -czvf /backup/etc_conf_backup.tar.gz /etc/*.conf", "tar -czf /backup/etc_conf_backup.tar.gz /etc/*.conf"], "points": 1},
-    {"query": "find all files modified in the last 7 days in /var/log", "expected": ["find /var/log -type f -mtime -7"], "points": 1},
-    {"query": "show the total size of all .log files in /var/log", "expected": ["find /var/log -type f -name '*.log' -exec du -ch {} + | grep total$"], "points": 1},
-    {"query": "find and print all files with execute permissions for others", "expected": ["find . -type f -perm -001"], "points": 1}
-  ],
-  "summary": {
-    "total_tests": 15,
-    "advanced_tests": 15,
-    "total_points": 15
-  }
-} 
+[
+  {"query": "find and delete all .DS_Store files recursively from the current directory", "expected": ["find . -name '.DS_Store' -delete", "find . -type f -name '.DS_Store' -exec rm {} +"], "points": 1},
+  {"query": "find all files larger than 1GB and list their paths", "expected": ["find . -type f -size +1G"], "points": 1},
+  {"query": "recursively change permissions of all .sh files to 755", "expected": ["find . -type f -name '*.sh' -exec chmod 755 {} +"], "points": 1},
+  {"query": "archive and compress the /var/log directory into a tar.gz file named logs_backup.tar.gz", "expected": ["tar -czvf logs_backup.tar.gz /var/log", "tar -czf logs_backup.tar.gz /var/log"], "points": 1},
+  {"query": "replace all occurrences of 'foo' with 'bar' in all .txt files in the current directory and subdirectories", "expected": ["find . -type f -name '*.txt' -exec sed -i '' 's/foo/bar/g' {} +", "find . -type f -name '*.txt' -exec sed -i 's/foo/bar/g' {} +"], "points": 1},
+  {"query": "show the 10 largest files in the current directory and subdirectories", "expected": ["find . -type f -exec du -h {} + | sort -hr | head -n 10"], "points": 1},
+  {"query": "find all symbolic links in /usr/local/bin", "expected": ["find /usr/local/bin -type l"], "points": 1},
+  {"query": "recursively change ownership of /srv/www to user 'www-data' and group 'www-data'", "expected": ["chown -R www-data:www-data /srv/www", "sudo chown -R www-data:www-data /srv/www"], "points": 1},
+  {"query": "list all open network ports and the processes using them", "expected": ["lsof -i -P -n", "netstat -tulnp", "ss -tulnp"], "points": 1},
+  {"query": "find and remove all empty directories from the current directory recursively", "expected": ["find . -type d -empty -delete"], "points": 1},
+  {"query": "show the number of files in each subdirectory of the current directory", "expected": ["find . -type f | awk -F/ '{print $2}' | sort | uniq -c"], "points": 1},
+  {"query": "backup all .conf files in /etc to /backup/etc_conf_backup.tar.gz", "expected": ["tar -czvf /backup/etc_conf_backup.tar.gz /etc/*.conf", "tar -czf /backup/etc_conf_backup.tar.gz /etc/*.conf"], "points": 1},
+  {"query": "find all files modified in the last 7 days in /var/log", "expected": ["find /var/log -type f -mtime -7"], "points": 1},
+  {"query": "show the total size of all .log files in /var/log", "expected": ["find /var/log -type f -name '*.log' -exec du -ch {} + | grep total$"], "points": 1},
+  {"query": "find and print all files with execute permissions for others", "expected": ["find . -type f -perm -001"], "points": 1}
+] 

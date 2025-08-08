@@ -215,5 +215,54 @@
     ],
     "alternatives": ["hostnamectl", "lsb_release", "cat /etc/os-release"],
     "caveats": "The information shown depends on the system and available kernel features. For detailed OS info, use lsb_release or /etc/os-release."
+  },
+  {
+    "use_case": "Install GUI applications with Homebrew",
+    "best_tool": "brew install --cask",
+    "description": "Install GUI applications (casks) using Homebrew. Note: 'brew cask' command is deprecated, use 'brew install --cask' instead.",
+    "examples": [
+      "brew install --cask visual-studio-code",
+      "brew install --cask google-chrome",
+      "brew install --cask firefox",
+      "brew install --cask docker"
+    ],
+    "recommended_flags": [
+      {"flag": "--cask", "description": "Install a cask (GUI application) instead of a formula"},
+      {"flag": "--force", "description": "Force installation even if already installed"},
+      {"flag": "--no-quarantine", "description": "Skip macOS quarantine for downloaded applications"}
+    ],
+    "alternatives": ["manual download", "App Store"],
+    "caveats": "The 'brew cask' command was deprecated in Homebrew 2.6.0. Always use 'brew install --cask' instead of 'brew cask install'. Casks install GUI applications to /Applications by default."
+  },
+  {
+    "use_case": "List installed GUI applications with Homebrew",
+    "best_tool": "brew list --cask",
+    "description": "List all installed GUI applications (casks) installed via Homebrew.",
+    "examples": [
+      "brew list --cask",
+      "brew list --cask | grep chrome"
+    ],
+    "recommended_flags": [
+      {"flag": "--cask", "description": "List only cask applications (not formulas)"},
+      {"flag": "--formula", "description": "List only formulas (not cask applications)"}
+    ],
+    "alternatives": ["brew list", "ls /Applications"],
+    "caveats": "The 'brew cask list' command was deprecated. Use 'brew list --cask' instead."
+  },
+  {
+    "use_case": "Search for GUI applications in Homebrew",
+    "best_tool": "brew search --cask",
+    "description": "Search for available GUI applications (casks) in Homebrew repositories.",
+    "examples": [
+      "brew search --cask",
+      "brew search --cask chrome",
+      "brew search --cask visual"
+    ],
+    "recommended_flags": [
+      {"flag": "--cask", "description": "Search only cask applications"},
+      {"flag": "--formula", "description": "Search only formulas (command-line tools)"}
+    ],
+    "alternatives": ["brew search", "manual web search"],
+    "caveats": "The 'brew cask search' command was deprecated. Use 'brew search --cask' instead."
   }
 ] 
