@@ -18,6 +18,7 @@
   {"query": "create directory logs with permissions 755", "expected": ["mkdir -m 755 logs", "mkdir logs && chmod 755 logs", "mkdir -p logs && chmod 755 logs"], "points": 3},
   {"query": "remove all txt files in current directory", "expected": ["rm *.txt", "rm -f *.txt"], "points": 3},
   {"query": "create symbolic link from source.txt to target.txt", "expected": ["ln -s source.txt target.txt", "ln -s source.txt target.txt"], "points": 3},
+  {"query": "show first 10 lines of README.md", "expected": ["head -n 10 README.md", "cat README.md | head -n 10"], "points": 3},
   {"query": "count number of lines in file document.txt", "expected": ["wc -l document.txt", "cat document.txt | wc -l"], "points": 3},
   {"query": "count lines in all txt files", "expected": ["wc -l *.txt", "cat *.txt | wc -l"], "points": 3},
   {"query": "remove first 5 lines from file data.txt", "expected": ["tail -n +6 data.txt > temp && mv temp data.txt", "sed '1,5d' data.txt > temp && mv temp data.txt"], "points": 3},
