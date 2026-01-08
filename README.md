@@ -3,6 +3,17 @@
 AI-powered shell assistant that translates natural language to zsh commands.
 - **Local AI model** - Runs entirely offline, so no API keys
 
+## Installation
+
+### Homebrew (macOS)
+
+```bash
+brew tap cjan/ash/ash
+brew install ash
+```
+
+### From Source
+
 ```bash
 make build
 ```

@@ -14,9 +14,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest]
         include:
           - os: macos-latest
+            platform: darwin
+            arch: arm64
+          - os: macos-13
             platform: darwin
             arch: amd64
           - os: ubuntu-latest
@@ -25,21 +27,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    
-    - name: Set up Python
-      uses: actions/setup-python@v4
       with:
-        python-version: '3.11'
-    
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.21'
-    
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        submodules: recursive
     
     - name: Build application
       run: |
@@ -52,13 +41,6 @@ jobs:
         VERSION: ${GITHUB_REF#refs/tags/}
         PLATFORM: ${{ matrix.platform }}
         ARCH: ${{ matrix.arch }}
-    
-    - name: Create Homebrew package
-      run: |
-        make homebrew
-      env:
-        VERSION: ${GITHUB_REF#refs/tags/}
-      if: matrix.os == 'macos-latest'
     
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
@@ -81,38 +63,18 @@ jobs:
       with:
         files: |
           **/*.tar.gz
-          **/*.zip
-        generate_release_notes: true
         body: |
-          ## Ash v${{ github.ref_name }}
+          ## Ash ${{ github.ref_name }}
           
-          AI-powered shell assistant that translates natural language to commands.
+          AI-powered shell assistant that translates natural language to zsh commands.
           
           ### Installation
           
           **Homebrew (macOS):**
           ```bash
-          brew tap cjan/ash/ash
+          brew tap cjan/ash
           brew install ash
-          ash-install
           ```
           
           **Manual:**
-          ```bash
-          tar -xzf ash-${{ github.ref_name }}-*.tar.gz
-          cd ash-${{ github.ref_name }}-*
-          ./install.sh
-          ```
-          
-          ### Features
-          - Local AI model (Qwen2.5-Coder-3B-Quantized)
-          - Natural language to shell commands
-          - Zsh integration with Ctrl+G toggle
-          - Self-contained installation
-          
-          ### SHA256 (Homebrew package)
-          `${{ env.SHA256 }}`
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        # Alternative: Use PAT if GITHUB_TOKEN doesn't work
-        # GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }} 
+          Download the tarball for your platform and extract it.
