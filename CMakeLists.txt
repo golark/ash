@@ -22,10 +22,10 @@ add_subdirectory(llama.cpp)
 
 find_package(CURL REQUIRED)
 
-add_executable(cli src/main.cpp)
+add_executable(ash src/main.cpp)
 
-target_include_directories(cli PRIVATE llama.cpp)
-target_include_directories(cli PRIVATE llama.cpp/common)
-target_include_directories(cli PRIVATE llama.cpp/vendor/cpp-httplib)
+target_include_directories(ash PRIVATE llama.cpp)
+target_include_directories(ash PRIVATE llama.cpp/common)
+target_include_directories(ash PRIVATE llama.cpp/vendor/cpp-httplib)
 
-target_link_libraries(cli llama CURL::libcurl cpp-httplib)
+target_link_libraries(ash llama CURL::libcurl cpp-httplib)

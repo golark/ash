@@ -12,7 +12,7 @@ build: $(LLAMA_CPP_SENTINEL)
 	cd build && cmake .. && cmake --build .
 
 run: build
-	./build/cli
+	./build/ash $(ARGS)
 
 clean:
 	rm -rf build

@@ -4,6 +4,6 @@ insert-semicolon() {
     local input="${LBUFFER}${RBUFFER}"
     LBUFFER=""
     RBUFFER=""
-    RBUFFER="$(./build/cli "$input")"
+    RBUFFER="$(./build/ash "$input")"
 }
 bindkey '^G' insert-semicolon
