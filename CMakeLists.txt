@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.13)
 project(ash)
 
+# Force static linking for llama.cpp libraries
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries" FORCE)
+
 include(CheckLanguage)
 check_language(CUDA)
 
