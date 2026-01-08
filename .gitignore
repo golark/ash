@@ -1,5 +1,6 @@
 # Models directory - contains large model files
 models/
+*.code-workspace
 
 # Distribution packages
 dist-package/
