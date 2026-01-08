@@ -49,8 +49,63 @@ int main(int argc, char **argv) {
     }, nullptr);
     llama_backend_init();
 
-    const char *model_path = "./model/mistral-7b-instruct-v0.2.Q4_0.gguf";
-    const char *lora_adapter_path = "./model/lora_mistral-7b-instruct-v0.2.gguf"; // Using itself as LoRA, per instruction
+    // Get home directory and construct model paths
+    const char *home_dir = getenv("HOME");
+    if (home_dir == nullptr) {
+        std::cerr << "Failed to get home directory" << std::endl;
+        llama_backend_free();
+        return 1;
+    }
+    
+    std::string models_dir = std::string(home_dir) + "/.ash/models";
+    std::string model_path_dest = models_dir + "/mistral-7b-instruct-v0.2.Q4_0.gguf";
+    std::string lora_path_dest = models_dir + "/lora_mistral-7b-instruct-v0.2.gguf";
+    
+    // Create models directory if it doesn't exist
+    struct stat info;
+    if (stat(models_dir.c_str(), &info) != 0) {
+        // Create directory with permissions 0755
+        if (mkdir(models_dir.c_str(), 0755) != 0) {
+            std::cerr << "Failed to create models directory: " << models_dir << std::endl;
+            llama_backend_free();
+            return 1;
+        }
+    }
+    
+    // Copy model files from ./model/ to ~/.ash/models/ if they don't exist
+    std::string model_path_src = "./model/mistral-7b-instruct-v0.2.Q4_0.gguf";
+    std::string lora_path_src = "./model/lora_mistral-7b-instruct-v0.2.gguf";
+    
+    // Copy model file if destination doesn't exist
+    if (stat(model_path_dest.c_str(), &info) != 0) {
+        std::ifstream src(model_path_src, std::ios::binary);
+        std::ofstream dst(model_path_dest, std::ios::binary);
+        if (!src.is_open() || !dst.is_open()) {
+            std::cerr << "Failed to copy model file from " << model_path_src << " to " << model_path_dest << std::endl;
+            llama_backend_free();
+            return 1;
+        }
+        dst << src.rdbuf();
+        src.close();
+        dst.close();
+    }
+    
+    // Copy LoRA file if destination doesn't exist
+    if (stat(lora_path_dest.c_str(), &info) != 0) {
+        std::ifstream src(lora_path_src, std::ios::binary);
+        std::ofstream dst(lora_path_dest, std::ios::binary);
+        if (!src.is_open() || !dst.is_open()) {
+            std::cerr << "Failed to copy LoRA file from " << lora_path_src << " to " << lora_path_dest << std::endl;
+            llama_backend_free();
+            return 1;
+        }
+        dst << src.rdbuf();
+        src.close();
+        dst.close();
+    }
+    
+    const char *model_path = model_path_dest.c_str();
+    const char *lora_adapter_path = lora_path_dest.c_str();
 
     // Model parameters (adjust as needed)
     llama_model_params model_params = llama_model_default_params();
@@ -68,26 +123,19 @@ int main(int argc, char **argv) {
         llama_backend_free();
         return 1;
     }
+    long long model_load_duration = 0;
     if (debug_mode) {
-        auto model_load_duration = std::chrono::duration_cast<std::chrono::milliseconds>(
+        model_load_duration = std::chrono::duration_cast<std::chrono::milliseconds>(
             model_load_end - model_load_start).count();
-        std::cerr << "[DEBUG] Model loading time: " << model_load_duration << " ms" << std::endl;
     }
 
     // Load LoRA adapter (will be applied to context later)
-    auto lora_load_start = std::chrono::high_resolution_clock::now();
     llama_adapter_lora *lora_adapter = llama_adapter_lora_init(model, lora_adapter_path);
-    auto lora_load_end = std::chrono::high_resolution_clock::now();
     if (lora_adapter == nullptr) {
         std::cerr << "Failed to load LoRA adapter: " << lora_adapter_path << std::endl;
         llama_model_free(model);
         llama_backend_free();
         return 1;
-    }
-    if (debug_mode) {
-        auto lora_load_duration = std::chrono::duration_cast<std::chrono::milliseconds>(
-            lora_load_end - lora_load_start).count();
-        std::cerr << "[DEBUG] LoRA adapter loading time: " << lora_load_duration << " ms" << std::endl;
     }
 
     // Get vocabulary for tokenization
@@ -155,6 +203,7 @@ int main(int argc, char **argv) {
     // Generate response
     auto generation_start = std::chrono::high_resolution_clock::now();
     std::string response;
+    int tokens_generated = 0;
     while (true) {
         // Check if we have enough space in the context
         int n_ctx = llama_n_ctx(ctx);
@@ -190,19 +239,32 @@ int main(int argc, char **argv) {
         std::cout << piece;
         std::cout.flush();
         response += piece;
+        tokens_generated++;
 
         // Prepare the next batch with the sampled token
         batch = llama_batch_get_one(&new_token_id, 1);
     }
     auto generation_end = std::chrono::high_resolution_clock::now();
     
-    if (debug_mode) {
-        auto generation_duration = std::chrono::duration_cast<std::chrono::milliseconds>(
-            generation_end - generation_start).count();
-        std::cerr << "[DEBUG] Total generation time: " << generation_duration << " ms" << std::endl;
-    }
-
     std::cout << std::endl;
+    
+    if (debug_mode) {
+        auto generation_duration_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+            generation_end - generation_start).count();
+        double generation_duration_sec = generation_duration_ms / 1000.0;
+        double tokens_per_sec = tokens_generated > 0 ? tokens_generated / generation_duration_sec : 0.0;
+        
+        // Format tokens_per_sec to 2 decimal places (round to nearest)
+        int tokens_per_sec_int = (int)(tokens_per_sec * 100.0 + 0.5);
+        int whole_part = tokens_per_sec_int / 100;
+        int decimal_part = tokens_per_sec_int % 100;
+        std::stringstream ss;
+        ss << whole_part << "." << (decimal_part < 10 ? "0" : "") << decimal_part;
+        std::string tokens_per_sec_str = ss.str();
+        
+        std::cerr << "[DEBUG] Model Load " << model_load_duration << " | Total: " << generation_duration_ms 
+                  << " ms | " << tokens_per_sec_str << " tokens/sec" << std::endl;
+    }
 
     // Cleanup
     llama_sampler_free(smpl);
