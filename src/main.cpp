@@ -14,27 +14,33 @@
 #include <fstream>
 
 void print_usage(const char *prog_name) {
-    std::cerr << "Usage: " << prog_name << " <prompt>" << std::endl;
+    std::cerr << "Usage: " << prog_name << " [-d] <prompt>" << std::endl;
+    std::cerr << "  -d: Enable debug mode with timing information" << std::endl;
     std::cerr << "  <prompt>: The text prompt to generate from" << std::endl;
 }
 
 int main(int argc, char **argv) {
-    // Check for user argument
-    if (argc < 2) {
+    // Parse command line arguments
+    bool debug_mode = false;
+    std::string user_prompt;
+    
+    for (int i = 1; i < argc; i++) {
+        if (std::string(argv[i]) == "-d") {
+            debug_mode = true;
+        } else {
+            if (!user_prompt.empty()) user_prompt += " ";
+            user_prompt += argv[i];
+        }
+    }
+    
+    // Check for user prompt
+    if (user_prompt.empty()) {
         print_usage(argv[0]);
         return 1;
     }
 
-    // Get the user prompt from command line arguments
-    std::string user_prompt;
-    for (int i = 1; i < argc; i++) {
-        if (i > 1) user_prompt += " ";
-        user_prompt += argv[i];
-    }
-
     // Format the prompt using the template
     std::string prompt = "<s>[INST] You are a terminal assistant. Output EXACTLY ONE valid zsh command. No explanations. No markdown.  User request: " + user_prompt + " [/INST]";
-    std::cout << prompt << std::endl;
 
     llama_log_set([](enum ggml_log_level level, const char * text, void * /* user_data */) {
         if (level >= GGML_LOG_LEVEL_ERROR) {
@@ -48,25 +54,40 @@ int main(int argc, char **argv) {
 
     // Model parameters (adjust as needed)
     llama_model_params model_params = llama_model_default_params();
-    // Optionally configure model_params here
+    // Suppress progress dots during model loading
+    model_params.progress_callback = [](float /* progress */, void * /* ctx */) {
+        return true;
+    };
 
     // Load base model
+    auto model_load_start = std::chrono::high_resolution_clock::now();
     llama_model *model = llama_model_load_from_file(model_path, model_params);
+    auto model_load_end = std::chrono::high_resolution_clock::now();
     if (model == nullptr) {
         std::cerr << "Failed to load base model: " << model_path << std::endl;
         llama_backend_free();
         return 1;
     }
+    if (debug_mode) {
+        auto model_load_duration = std::chrono::duration_cast<std::chrono::milliseconds>(
+            model_load_end - model_load_start).count();
+        std::cerr << "[DEBUG] Model loading time: " << model_load_duration << " ms" << std::endl;
+    }
 
     // Load LoRA adapter (will be applied to context later)
+    auto lora_load_start = std::chrono::high_resolution_clock::now();
     llama_adapter_lora *lora_adapter = llama_adapter_lora_init(model, lora_adapter_path);
+    auto lora_load_end = std::chrono::high_resolution_clock::now();
     if (lora_adapter == nullptr) {
         std::cerr << "Failed to load LoRA adapter: " << lora_adapter_path << std::endl;
         llama_model_free(model);
         llama_backend_free();
         return 1;
-    } else {
-        std::cout << "Loaded LoRA adapter: " << lora_adapter_path << std::endl;
+    }
+    if (debug_mode) {
+        auto lora_load_duration = std::chrono::duration_cast<std::chrono::milliseconds>(
+            lora_load_end - lora_load_start).count();
+        std::cerr << "[DEBUG] LoRA adapter loading time: " << lora_load_duration << " ms" << std::endl;
     }
 
     // Get vocabulary for tokenization
@@ -95,10 +116,7 @@ int main(int argc, char **argv) {
         llama_model_free(model);
         llama_backend_free();
         return 1;
-    } else {
-        std::cout << "Applied LoRA adapter to context" << std::endl;
-    }
-
+    } 
     // Initialize the sampler
     llama_sampler *smpl = llama_sampler_chain_init(llama_sampler_chain_default_params());
     llama_sampler_chain_add(smpl, llama_sampler_init_min_p(0.05f, 1));
@@ -135,6 +153,7 @@ int main(int argc, char **argv) {
     llama_token new_token_id;
     
     // Generate response
+    auto generation_start = std::chrono::high_resolution_clock::now();
     std::string response;
     while (true) {
         // Check if we have enough space in the context
@@ -174,6 +193,13 @@ int main(int argc, char **argv) {
 
         // Prepare the next batch with the sampled token
         batch = llama_batch_get_one(&new_token_id, 1);
+    }
+    auto generation_end = std::chrono::high_resolution_clock::now();
+    
+    if (debug_mode) {
+        auto generation_duration = std::chrono::duration_cast<std::chrono::milliseconds>(
+            generation_end - generation_start).count();
+        std::cerr << "[DEBUG] Total generation time: " << generation_duration << " ms" << std::endl;
     }
 
     std::cout << std::endl;
