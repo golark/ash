@@ -8,8 +8,7 @@ AI-powered shell assistant that translates natural language to zsh commands.
 ### Homebrew (macOS)
 
 ```bash
-brew tap cjan/ash/ash
-brew install ash
+brew install golark/ash/ash
 ```
 
 ### From Source
