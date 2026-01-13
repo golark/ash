@@ -71,39 +71,7 @@ int main(int argc, char **argv) {
             return 1;
         }
     }
-    
-    // Copy model files from ./model/ to ~/.ash/models/ if they don't exist
-    std::string model_path_src = "./model/mistral-7b-instruct-v0.2.Q4_0.gguf";
-    std::string lora_path_src = "./model/lora_mistral-7b-instruct-v0.2.gguf";
-    
-    // Copy model file if destination doesn't exist
-    if (stat(model_path_dest.c_str(), &info) != 0) {
-        std::ifstream src(model_path_src, std::ios::binary);
-        std::ofstream dst(model_path_dest, std::ios::binary);
-        if (!src.is_open() || !dst.is_open()) {
-            std::cerr << "Failed to copy model file from " << model_path_src << " to " << model_path_dest << std::endl;
-            llama_backend_free();
-            return 1;
-        }
-        dst << src.rdbuf();
-        src.close();
-        dst.close();
-    }
-    
-    // Copy LoRA file if destination doesn't exist
-    if (stat(lora_path_dest.c_str(), &info) != 0) {
-        std::ifstream src(lora_path_src, std::ios::binary);
-        std::ofstream dst(lora_path_dest, std::ios::binary);
-        if (!src.is_open() || !dst.is_open()) {
-            std::cerr << "Failed to copy LoRA file from " << lora_path_src << " to " << lora_path_dest << std::endl;
-            llama_backend_free();
-            return 1;
-        }
-        dst << src.rdbuf();
-        src.close();
-        dst.close();
-    }
-    
+        
     const char *model_path = model_path_dest.c_str();
     const char *lora_adapter_path = lora_path_dest.c_str();
 
