@@ -59,10 +59,16 @@ release-homebrew: release
 		exit 1; \
 	fi
 	@echo "Creating GitHub release $(VERSION)..."
-	@gh release create "$(VERSION)" \
-		--title "Ash $(VERSION)" \
-		--notes "$$(cat README.md)" \
-		$(DIST_DIR)/$(TARBALL) || true
+	@if gh release view "$(VERSION)" >/dev/null 2>&1; then \
+		echo "Release $(VERSION) already exists, updating it..."; \
+		gh release upload "$(VERSION)" $(DIST_DIR)/$(TARBALL) --clobber || true; \
+		gh release edit "$(VERSION)" --title "Ash $(VERSION)" --notes "$$(cat README.md)" || true; \
+	else \
+		gh release create "$(VERSION)" \
+			--title "Ash $(VERSION)" \
+			--notes "$$(cat README.md)" \
+			$(DIST_DIR)/$(TARBALL); \
+	fi
 	@echo "Updating Homebrew formula..."
 	@if command -v shasum >/dev/null 2>&1; then \
 		SHA256=$$(shasum -a 256 $(DIST_DIR)/$(TARBALL) | cut -d' ' -f1); \

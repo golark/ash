@@ -19,6 +19,66 @@ void print_usage(const char *prog_name) {
     std::cerr << "  <prompt>: The text prompt to generate from" << std::endl;
 }
 
+std::string clean_response(const std::string& response) {
+    std::string cleaned = response;
+    
+    // Remove markdown code blocks (``` at start/end, possibly with language identifier)
+    // Remove leading ``` and any following text until newline
+    if (cleaned.size() >= 3 && cleaned.substr(0, 3) == "```") {
+        size_t newline_pos = cleaned.find('\n', 3);
+        if (newline_pos != std::string::npos) {
+            cleaned = cleaned.substr(newline_pos + 1);
+        } else {
+            // No newline, just remove the ```
+            cleaned = cleaned.substr(3);
+        }
+    }
+    
+    // Remove trailing ``` (possibly on its own line or after content)
+    size_t last_backtick = cleaned.rfind("```");
+    if (last_backtick != std::string::npos) {
+        // Check if it's at the end or followed only by whitespace
+        std::string after_backticks = cleaned.substr(last_backtick + 3);
+        bool only_whitespace = true;
+        for (char c : after_backticks) {
+            if (c != ' ' && c != '\t' && c != '\n' && c != '\r') {
+                only_whitespace = false;
+                break;
+            }
+        }
+        if (only_whitespace) {
+            cleaned = cleaned.substr(0, last_backtick);
+        }
+    }
+    
+    // Remove inline backticks
+    std::string result;
+    for (size_t i = 0; i < cleaned.size(); i++) {
+        if (cleaned[i] != '`') {
+            result += cleaned[i];
+        }
+    }
+    cleaned = result;
+    
+    // Trim leading whitespace
+    size_t start = cleaned.find_first_not_of(" \t\n\r");
+    if (start != std::string::npos) {
+        cleaned = cleaned.substr(start);
+    } else {
+        cleaned.clear();
+    }
+    
+    // Trim trailing whitespace
+    size_t end = cleaned.find_last_not_of(" \t\n\r");
+    if (end != std::string::npos) {
+        cleaned = cleaned.substr(0, end + 1);
+    } else {
+        cleaned.clear();
+    }
+    
+    return cleaned;
+}
+
 int main(int argc, char **argv) {
     // Parse command line arguments
     bool debug_mode = false;
@@ -189,6 +249,37 @@ int main(int argc, char **argv) {
         batch = llama_batch_get_one(&new_token_id, 1);
     }
     auto generation_end = std::chrono::high_resolution_clock::now();
+    
+    // Clean the response
+    std::string cleaned_response = clean_response(response);
+    
+    // If the cleaned response differs from the original, reprint it
+    if (cleaned_response != response) {
+        // Count newlines in original response to clear them
+        int newline_count = 0;
+        for (char c : response) {
+            if (c == '\n') newline_count++;
+        }
+        
+        // Move to beginning of the output and clear lines
+        std::cout << "\r";
+        if (newline_count > 0) {
+            // Move up to clear previous lines
+            std::cout << "\033[" << newline_count << "A";
+            // Clear each line
+            for (int i = 0; i <= newline_count; i++) {
+                std::cout << "\033[K";
+                if (i < newline_count) std::cout << "\033[1B";
+            }
+            // Move back to start
+            std::cout << "\033[" << newline_count << "A";
+        } else {
+            std::cout << "\033[K"; // Clear current line
+        }
+        
+        // Print the cleaned response
+        std::cout << cleaned_response;
+    }
     
     std::cout << std::endl;
     
