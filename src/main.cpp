@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
     }
 
     // Format the prompt using the template
-    std::string prompt = "<s>[INST] You are a terminal assistant. Output EXACTLY ONE valid zsh command. No explanations. No markdown.  User request: " + user_prompt + " [/INST]";
+    std::string prompt = "<|im_start|>system\nYou are a terminal assistant. Output EXACTLY ONE valid zsh command. No explanations. No markdown.\n<|im_end|>\n<|im_start|>user\n" + user_prompt + "\n<|im_end|>\n<|im_start|>assistant\n";
 
     llama_log_set([](enum ggml_log_level level, const char * text, void * /* user_data */) {
         if (level >= GGML_LOG_LEVEL_ERROR) {
@@ -58,8 +58,7 @@ int main(int argc, char **argv) {
     }
     
     std::string models_dir = std::string(home_dir) + "/.ash/models";
-    std::string model_path_dest = models_dir + "/mistral-7b-instruct-v0.2.Q4_0.gguf";
-    std::string lora_path_dest = models_dir + "/lora_mistral-7b-instruct-v0.2.gguf";
+    std::string model_path_dest = models_dir + "/qwen2.5-coder-3b-instruct-q4_k_m.gguf";
     
     // Create models directory if it doesn't exist
     struct stat info;
@@ -73,7 +72,6 @@ int main(int argc, char **argv) {
     }
         
     const char *model_path = model_path_dest.c_str();
-    const char *lora_adapter_path = lora_path_dest.c_str();
 
     // Model parameters (adjust as needed)
     llama_model_params model_params = llama_model_default_params();
@@ -97,15 +95,6 @@ int main(int argc, char **argv) {
             model_load_end - model_load_start).count();
     }
 
-    // Load LoRA adapter (will be applied to context later)
-    llama_adapter_lora *lora_adapter = llama_adapter_lora_init(model, lora_adapter_path);
-    if (lora_adapter == nullptr) {
-        std::cerr << "Failed to load LoRA adapter: " << lora_adapter_path << std::endl;
-        llama_model_free(model);
-        llama_backend_free();
-        return 1;
-    }
-
     // Get vocabulary for tokenization
     const llama_vocab *vocab = llama_model_get_vocab(model);
 
@@ -117,22 +106,11 @@ int main(int argc, char **argv) {
     llama_context *ctx = llama_init_from_model(model, ctx_params);
     if (ctx == nullptr) {
         std::cerr << "Failed to create llama context" << std::endl;
-        llama_adapter_lora_free(lora_adapter);
         llama_model_free(model);
         llama_backend_free();
         return 1;
     }
 
-    // Apply LoRA adapter to the context
-    int lora_ret = llama_set_adapter_lora(ctx, lora_adapter, 1.0f);
-    if (lora_ret != 0) {
-        std::cerr << "Failed to apply LoRA adapter to context" << std::endl;
-        llama_free(ctx);
-        llama_adapter_lora_free(lora_adapter);
-        llama_model_free(model);
-        llama_backend_free();
-        return 1;
-    } 
     // Initialize the sampler
     llama_sampler *smpl = llama_sampler_chain_init(llama_sampler_chain_default_params());
     llama_sampler_chain_add(smpl, llama_sampler_init_min_p(0.05f, 1));
@@ -147,7 +125,6 @@ int main(int argc, char **argv) {
         std::cerr << "Failed to tokenize prompt" << std::endl;
         llama_sampler_free(smpl);
         llama_free(ctx);
-        llama_adapter_lora_free(lora_adapter);
         llama_model_free(model);
         llama_backend_free();
         return 1;
@@ -158,7 +135,6 @@ int main(int argc, char **argv) {
         std::cerr << "Failed to tokenize the prompt" << std::endl;
         llama_sampler_free(smpl);
         llama_free(ctx);
-        llama_adapter_lora_free(lora_adapter);
         llama_model_free(model);
         llama_backend_free();
         return 1;
@@ -237,7 +213,6 @@ int main(int argc, char **argv) {
     // Cleanup
     llama_sampler_free(smpl);
     llama_free(ctx);
-    llama_adapter_lora_free(lora_adapter);
     llama_model_free(model);
     llama_backend_free();
 
