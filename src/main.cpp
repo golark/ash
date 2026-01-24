@@ -240,8 +240,6 @@ int main(int argc, char **argv) {
             break;
         }
         std::string piece(buf, n);
-        std::cout << piece;
-        std::cout.flush();
         response += piece;
         tokens_generated++;
 
@@ -252,35 +250,8 @@ int main(int argc, char **argv) {
     
     // Clean the response
     std::string cleaned_response = clean_response(response);
-    
-    // If the cleaned response differs from the original, reprint it
-    if (cleaned_response != response) {
-        // Count newlines in original response to clear them
-        int newline_count = 0;
-        for (char c : response) {
-            if (c == '\n') newline_count++;
-        }
-        
-        // Move to beginning of the output and clear lines
-        std::cout << "\r";
-        if (newline_count > 0) {
-            // Move up to clear previous lines
-            std::cout << "\033[" << newline_count << "A";
-            // Clear each line
-            for (int i = 0; i <= newline_count; i++) {
-                std::cout << "\033[K";
-                if (i < newline_count) std::cout << "\033[1B";
-            }
-            // Move back to start
-            std::cout << "\033[" << newline_count << "A";
-        } else {
-            std::cout << "\033[K"; // Clear current line
-        }
-        
-        // Print the cleaned response
-        std::cout << cleaned_response;
-    }
-    
+    std::cout << cleaned_response;
+
     std::cout << std::endl;
     
     if (debug_mode) {
