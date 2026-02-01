@@ -1,78 +1,92 @@
-.PHONY: help venv run unittest quantize clean build download stop uninstall
+.PHONY: build run clean
 
-VENV = . venv/bin/activate &&
+# Note: This project depends on the llama.cpp submodule.
+# The 'build' target will automatically initialize it.
 
-# Show help
-help:
-	@echo "Available targets:"
-	@echo "  venv      - Create virtual environment and install dependencies"
-	@echo "  download  - Download Qwen2.5-Coder-3B-Instruct-Quantized model from Hugging Face"
-	@echo "  build     - Build the application (includes download)"
-	@echo "  install   - Install the built application"
-	@echo "  uninstall - Uninstall Ash from the system"
-	@echo "  run       - Run the main application"
-	@echo "  stop      - Stop the ash server"
-	@echo "  unittest  - Run unit tests"
-	@echo "  quantize  - Set up model quantization"
-	@echo "  clean     - Clean build artifacts"
-	@echo "  release   - Create release package"
-	@echo "  homebrew  - Create Homebrew package"
-	@echo ""
-	@echo "Custom Model Usage:"
-	@echo "  ash-server --model-path /path/to/model.gguf"
-	@echo "  export ASH_MODEL_PATH=/path/to/model.gguf"
+LLAMA_CPP_DIR = llama.cpp
+LLAMA_CPP_COMMIT = 85c40c9b02941ebf1add1469af75f1796d513ef4
+LLAMA_CPP_SENTINEL = $(LLAMA_CPP_DIR)/.git
 
-# Default target
-venv:
-	python3 -m venv venv
-	$(VENV) pip install -r requirements.txt
+build: $(LLAMA_CPP_SENTINEL)
+	mkdir -p build
+	cd build && cmake .. && cmake --build .
 
-# Run the main application
-run: venv stop
-	$(VENV) python ash/server.py --port 8765
-
-# Stop the ash server
-stop:
-	@echo "Stopping ash server..."
-	@$(VENV) python ash/server.py --stop || echo "No ash server running or failed to stop"
-	@echo "✅ ash server stop requested"
-
-# Run unit tests
-unittest:
-	@echo "Running unit tests..."
-	$(VENV) python -m pytest tests/ -v
+run: build
+	./build/ash $(ARGS)
 
 clean:
-	rm -rf dist build dist-package
+	rm -rf build
 
-download-model: venv
-	$(VENV) python scripts/download_model.py Qwen/Qwen2.5-Coder-3B-Instruct-GGUF qwen2.5-coder-3b-instruct-q4_k_m.gguf
+$(LLAMA_CPP_SENTINEL):
+	git submodule add https://github.com/ggerganov/llama.cpp $(LLAMA_CPP_DIR) || true
+	git submodule update --init --recursive
+	git -C $(LLAMA_CPP_DIR) checkout $(LLAMA_CPP_COMMIT)
 
-install: build
-	./scripts/install.sh
+.PHONY: submodule
+submodule: $(LLAMA_CPP_SENTINEL)
 
-uninstall:
-	@echo "Uninstalling Ash..."
-	./scripts/uninstall.sh
+# Release targets
+VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
+PLATFORM ?= $(shell uname -s | tr '[:upper:]' '[:lower:]')
+ARCH ?= $(shell uname -m)
+DIST_DIR = dist
+TARBALL = ash-$(VERSION)-$(PLATFORM)-$(ARCH).tar.gz
 
-build: clean venv download-model build-client build-server
-	@echo "✅ Build complete! Using Python server executable."
-	@echo "📁 Built files:"
-	@echo "   - dist/server/server (executable)"
-	@echo "   - dist/ash-client (Go binary)"
-	@echo "   - models/qwen2.5-coder-3b-instruct-q4_k_m.gguf (model file)"
+.PHONY: release
+release: build
+	@echo "Creating release package for $(VERSION) on $(PLATFORM)-$(ARCH)..."
+	@mkdir -p $(DIST_DIR)/ash-$(VERSION)
+	@cp build/ash $(DIST_DIR)/ash-$(VERSION)/
+	@cp widget.zsh $(DIST_DIR)/ash-$(VERSION)/
+	@cp LICENSE $(DIST_DIR)/ash-$(VERSION)/
+	@cp README.md $(DIST_DIR)/ash-$(VERSION)/
+	@cd $(DIST_DIR) && tar -czf $(TARBALL) ash-$(VERSION)
+	@echo "Created $(DIST_DIR)/$(TARBALL)"
 
-build-client:
-	go build -o dist/ash-client ash/client.go
-
-build-server:
-	@echo "Building ash-server executable..."
-	@mkdir -p dist
-	$(VENV) pyinstaller ash-server.spec
-	@echo "✅ ash-server executable built"
-
-release:
-	./scripts/package.sh
-
-homebrew: build
-	./scripts/homebrew-package.sh
+.PHONY: release-homebrew
+release-homebrew: release
+	@echo "Releasing $(VERSION) to Homebrew..."
+	@if [ -z "$(VERSION)" ] || [ "$(VERSION)" = "dev" ]; then \
+		echo "Error: VERSION must be set (e.g., VERSION=v1.0.0)"; \
+		exit 1; \
+	fi
+	@if ! command -v gh >/dev/null 2>&1; then \
+		echo "Error: GitHub CLI (gh) is required. Install it with: brew install gh"; \
+		exit 1; \
+	fi
+	@if [ ! -d "../homebrew-ash" ]; then \
+		echo "Error: ../homebrew-ash repository not found"; \
+		exit 1; \
+	fi
+	@echo "Creating GitHub release $(VERSION)..."
+	@if gh release view "$(VERSION)" >/dev/null 2>&1; then \
+		echo "Release $(VERSION) already exists, updating it..."; \
+		gh release upload "$(VERSION)" $(DIST_DIR)/$(TARBALL) --clobber || true; \
+		gh release edit "$(VERSION)" --title "Ash $(VERSION)" --notes "$$(cat README.md)" || true; \
+	else \
+		gh release create "$(VERSION)" \
+			--title "Ash $(VERSION)" \
+			--notes "$$(cat README.md)" \
+			$(DIST_DIR)/$(TARBALL); \
+	fi
+	@echo "Updating Homebrew formula..."
+	@if command -v shasum >/dev/null 2>&1; then \
+		SHA256=$$(shasum -a 256 $(DIST_DIR)/$(TARBALL) | cut -d' ' -f1); \
+	elif command -v sha256sum >/dev/null 2>&1; then \
+		SHA256=$$(sha256sum $(DIST_DIR)/$(TARBALL) | cut -d' ' -f1); \
+	else \
+		echo "Error: Neither shasum nor sha256sum found. Cannot compute sha256."; \
+		exit 1; \
+	fi; \
+	VERSION_NUM=$$(echo $(VERSION) | sed 's/^v//'); \
+	sed -i.bak "s/version \".*\"/version \"$$VERSION_NUM\"/" ../homebrew-ash/ash.rb && \
+	sed -i.bak "s/sha256 \".*\"/sha256 \"$$SHA256\"/" ../homebrew-ash/ash.rb && \
+	rm ../homebrew-ash/ash.rb.bak
+	@echo "Committing and pushing to homebrew-ash..."
+	@cd ../homebrew-ash && \
+		git add ash.rb && \
+		git commit -m "ash: update to $(VERSION)" && \
+		git push
+	@echo "✓ Release $(VERSION) complete!"
+	@echo "  - GitHub release: https://github.com/golark/ash/releases/tag/$(VERSION)"
+	@echo "  - Homebrew formula updated and pushed"

@@ -1,7 +1,0 @@
-[
-  {"query": "install python3.12 using brew", "expected": ["brew install python3.12", "brew install python@3.12"], "points": 3},
-  {"query": "search curl using brew", "expected": ["brew search", "brew search package_name"], "points": 3},
-  {"query": "list installed packages for brew", "expected": ["brew list", "brew list --formula", "brew list --cask"], "points": 3},
-  {"query": "upgrade git using brew", "expected": ["brew upgrade git", "brew upgrade package_name"], "points": 3},
-  {"query": "show tapped brew repositories", "expected": ["brew tap", "brew tap user/repo"], "points": 3},
-  {"query": "uninstall git using brew", "expected": ["brew uninstall git"], "points": 3}]
