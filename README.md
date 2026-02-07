@@ -1,5 +1,5 @@
 
-[!demo](./demo/demo.gif)
+![Demo](./demo/demo.gif#autoplay)
 
 ### Zsh Integration
 
