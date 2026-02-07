@@ -1,5 +1,5 @@
 
-[demo](./demo/demo.gif)
+[!demo](./demo/demo.gif)
 
 ### Zsh Integration
 
