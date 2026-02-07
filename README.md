@@ -1,9 +1,8 @@
-Convert natural language to shell commands fast, local & free ( No subscriptions, API calls to data centers )
+Convert natural language to shell commands fast, local & free ( No Subscriptions, No API Calls )
 
 ![Demo](./demo/demo.gif#autoplay)
 
-
-### install
+### Install
 ```bash
 brew tap golark/ash
 brew install ash
