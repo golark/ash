@@ -1,5 +1,5 @@
 #include "llama.h"
-#include "common.h"
+#include <curl/curl.h>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -10,8 +10,90 @@
 #include <map>
 #include <algorithm>
 #include <chrono>
+#include <iomanip>
 #include <unistd.h>
 #include <fstream>
+
+// Write callback for CURL: write received data to FILE* userdata.
+static size_t download_write_cb(char * ptr, size_t size, size_t nmemb, void * userdata) {
+    return fwrite(ptr, size, nmemb, static_cast<FILE *>(userdata));
+}
+
+// Progress callback for CURL: draw progress bar. Throttle updates to ~10 Hz.
+static int download_progress_cb(void * clientp, curl_off_t dltotal, curl_off_t dlnow,
+                                curl_off_t /* ultotal */, curl_off_t /* ulnow */) {
+    auto * last_update = static_cast<std::chrono::steady_clock::time_point *>(clientp);
+    auto now = std::chrono::steady_clock::now();
+    if (dltotal > 0 && dlnow < dltotal &&
+        std::chrono::duration_cast<std::chrono::milliseconds>(now - *last_update).count() < 100) {
+        return 0;
+    }
+    *last_update = now;
+
+    const int bar_width = 40;
+    double dl_mib = dlnow / (1024.0 * 1024.0);
+    std::cerr << "\r  [";
+    if (dltotal > 0) {
+        double total_mib = dltotal / (1024.0 * 1024.0);
+        int pct = static_cast<int>((100 * dlnow) / dltotal);
+        int filled = (bar_width * dlnow) / dltotal;
+        for (int i = 0; i < bar_width; i++) {
+            std::cerr << (i < filled ? '#' : ' ');
+        }
+        std::cerr << "] " << pct << "% " << std::fixed << std::setprecision(1)
+                  << dl_mib << " / " << total_mib << " MiB   " << std::flush;
+    } else {
+        std::cerr << std::string(bar_width, '.') << "] " << std::fixed << std::setprecision(1)
+                  << dl_mib << " MiB   " << std::flush;
+    }
+    return 0;
+}
+
+// Download a file from url to path. Returns true on success.
+static bool download_file(const std::string & url, const std::string & path) {
+    const std::string path_tmp = path + ".tmp";
+    FILE * fp = fopen(path_tmp.c_str(), "wb");
+    if (!fp) {
+        std::cerr << "Failed to open " << path_tmp << " for writing" << std::endl;
+        return false;
+    }
+
+    CURL * curl = curl_easy_init();
+    if (!curl) {
+        fclose(fp);
+        remove(path_tmp.c_str());
+        return false;
+    }
+
+    std::chrono::steady_clock::time_point last_progress_update;
+    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, download_write_cb);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
+    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+    curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
+    curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, download_progress_cb);
+    curl_easy_setopt(curl, CURLOPT_XFERINFODATA, &last_progress_update);
+
+    bool ok = curl_easy_perform(curl) == CURLE_OK;
+    long http_code = 0;
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
+    ok = ok && (http_code >= 200 && http_code < 300);
+
+    curl_easy_cleanup(curl);
+    fclose(fp);
+
+    std::cerr << "\r" << std::string(60, ' ') << "\r" << std::flush;  // clear progress line
+    if (!ok) {
+        remove(path_tmp.c_str());
+        return false;
+    }
+    if (rename(path_tmp.c_str(), path.c_str()) != 0) {
+        std::cerr << "Failed to rename " << path_tmp << " to " << path << std::endl;
+        remove(path_tmp.c_str());
+        return false;
+    }
+    return true;
+}
 
 void print_usage(const char *prog_name) {
     std::cerr << "Usage: " << prog_name << " [-d] <prompt>" << std::endl;
@@ -130,7 +212,19 @@ int main(int argc, char **argv) {
             return 1;
         }
     }
-        
+
+    // Download model from Hugging Face if it doesn't exist
+    if (stat(model_path_dest.c_str(), &info) != 0) {
+        std::cerr << "First time usage, downloading model (this may take a couple of minutes)..." << std::endl;
+        const std::string model_url =
+            "https://huggingface.co/Qwen/Qwen2.5-Coder-3B-Instruct-GGUF/resolve/main/qwen2.5-coder-3b-instruct-q4_k_m.gguf";
+        if (!download_file(model_url, model_path_dest)) {
+            std::cerr << "Failed to download model from " << model_url << std::endl;
+            llama_backend_free();
+            return 1;
+        }
+    }
+
     const char *model_path = model_path_dest.c_str();
 
     // Model parameters (adjust as needed)
@@ -172,11 +266,23 @@ int main(int argc, char **argv) {
     }
 
     // Initialize the sampler
-    llama_sampler *smpl = llama_sampler_chain_init(llama_sampler_chain_default_params());
-    llama_sampler_chain_add(smpl, llama_sampler_init_min_p(0.05f, 1));
-    llama_sampler_chain_add(smpl, llama_sampler_init_temp(0.8f));
+    llama_sampler *smpl = llama_sampler_chain_init(
+        llama_sampler_chain_default_params()
+    );
+    
+    // Deterministic first
+    llama_sampler_chain_add(smpl, llama_sampler_init_temp(0.25f));
+    
+    // Strong probability mass pruning
+    llama_sampler_chain_add(smpl, llama_sampler_init_top_p(0.85f, 1));
+    llama_sampler_chain_add(smpl, llama_sampler_init_top_k(20));
+    
+    // Safety net against rare garbage
+    llama_sampler_chain_add(smpl, llama_sampler_init_min_p(0.08f, 1));
+    
+    // Stable randomness (or fixed seed if you want reproducibility)
     llama_sampler_chain_add(smpl, llama_sampler_init_dist(LLAMA_DEFAULT_SEED));
-
+    
     // Tokenize the prompt
     const bool is_first = llama_memory_seq_pos_max(llama_get_memory(ctx), 0) == -1;
     const int n_prompt_tokens = -llama_tokenize(vocab, prompt.c_str(), prompt.size(), NULL, 0, is_first, true);

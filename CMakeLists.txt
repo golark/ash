@@ -25,7 +25,5 @@ find_package(CURL REQUIRED)
 add_executable(ash src/main.cpp)
 
 target_include_directories(ash PRIVATE llama.cpp)
-target_include_directories(ash PRIVATE llama.cpp/common)
-target_include_directories(ash PRIVATE llama.cpp/vendor/cpp-httplib)
 
-target_link_libraries(ash llama CURL::libcurl cpp-httplib)
+target_link_libraries(ash llama CURL::libcurl)

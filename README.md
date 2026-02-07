@@ -1,37 +1,22 @@
-# Ash
+<p align="center">
+  Simply converts natural language to shell commands
+  <br><br>
+  🚀 Fast 🏠 Local & 🆓 Free
+  <br><br>
+  🚫 No Subscriptions/API Calls
+</p>
 
-AI-powered shell assistant that translates natural language to zsh commands.
-- **Local AI model** - Runs entirely offline, so no API keys
+![Demo](./demo/demo.gif#autoplay)
 
-## Installation
-
-### Homebrew (macOS)
-
+### Install
 ```bash
-brew install golark/ash/ash
+brew tap golark/ash
+brew install ash
 ```
-
-### From Source
-
-```bash
-make build
-```
-
-## Usage
-
-### Standalone
-
-```bash
-./build/ash "list all files in current directory"
-```
-
-### Zsh Integration
 
 Source the widget in your `.zshrc`:
-
 ```bash
 source /path/to/ash/widget.zsh
 ```
 
-Then press `Ctrl+G` while typing to generate a command from your input.
-
+Press `Ctrl+G` to generate a command from your input
