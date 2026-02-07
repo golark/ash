@@ -20,3 +20,4 @@ source /path/to/ash/widget.zsh
 ```
 
 Press `Ctrl+G` to generate a command from your input
+
