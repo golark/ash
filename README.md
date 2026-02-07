@@ -1,29 +1,5 @@
-# Ash
 
-AI-powered shell assistant that translates natural language to zsh commands.
-- **Local AI model** - Runs entirely offline, so no API keys
-
-## Installation
-
-### Homebrew (macOS)
-
-```bash
-brew install golark/ash/ash
-```
-
-### From Source
-
-```bash
-make build
-```
-
-## Usage
-
-### Standalone
-
-```bash
-./build/ash "list all files in current directory"
-```
+[demo](./demo/demo.gif)
 
 ### Zsh Integration
 
