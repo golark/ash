@@ -1,4 +1,8 @@
-Convert natural language to shell commands — 🚀 Fast 🏠 Local & Free (🚫 No Subscriptions/API Calls)
+Convert natural language to shell commands
+
+🚀 Fast 🏠 Local & Free
+
+🚫 No Subscriptions/API Calls
 
 ![Demo](./demo/demo.gif#autoplay)
 
