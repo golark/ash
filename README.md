@@ -10,7 +10,7 @@
 
 </p>
 
-![Demo](./demo.gif#autoplay)
+![Demo](./demo/demo.gif#autoplay)
 
 🧩 Installation
 
