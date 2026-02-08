@@ -8,6 +8,18 @@ Distributed as a standalone executable—no need to download external models or 
 
 ![Demo](./demo/demo.gif#autoplay)
 
+## 🤔 Why ash?
+
+Because your terminal doesn’t need a cloud connection or a 10GB model.
+
+**ash** is:
+- local by default
+- instant to use
+- private and offline
+- distributed as a single executable
+
+It does one thing well: turn natural language into shell commands — fast.
+
 🧩 Installation
 
 macOS (Homebrew)
@@ -26,3 +38,6 @@ Restart your terminal, type your command then try:
 ```bash
 CTRL + G
 ```
+
+📄 License
+Apache-2.0 © 
