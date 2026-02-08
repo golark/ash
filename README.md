@@ -4,6 +4,7 @@
   🚀 Fast 🏠 Local & 🆓 Free
 </p>
 
+Distributed as a standalone executable—no need to download external models or run local runtimes like Ollama.
 
 ![Demo](./demo/demo.gif#autoplay)
 
