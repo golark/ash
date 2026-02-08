@@ -38,13 +38,21 @@ Because your terminal doesn’t need a cloud connection or a 10GB model.
 | Privacy-first        | ✅  | ❌      | ❌       | ✅                |
 | Single binary        | ✅  | ❌      | ❌       | ❌                |
 
-**ash** focuses on speed, simplicity, and terminal-native workflows — without turning your shell into an AI stack.
-It does one thing well: turn natural language into shell commands — fast.
+## 🤝 Contributing
 
+Contributions are welcome and appreciated!
 
-⚙️ Configuration
+Whether it’s:
+- bug reports
+- feature ideas
+- documentation improvements
+- code contributions
 
+Feel free to open an issue or submit a pull request.
 
+If you’re planning a larger change, please open an issue first so we can discuss the approach.
+
+By contributing, you agree that your contributions will be licensed under the Apache-2.0 License.
 
 📄 License
 Apache-2.0 © 
