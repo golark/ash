@@ -20,7 +20,7 @@ Remember to Source the widget in your `.zshrc`:
 ```bash
 source /path/to/ash/widget.zsh
 ```
-Restart your terminal, type your command then hit CTRL + G 
+Restart your terminal, type your command followed by CTRL + G 
 
 
 ## 🤔 Why ash?
