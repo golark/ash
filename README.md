@@ -2,11 +2,8 @@
   Simply converts natural language to shell commands
   <br><br>
   🚀 Fast 🏠 Local & 🆓 Free
-  <br><br>
-  🚫 No Subscriptions/API Calls
 </p>
 
-📸 Demo
 
 ![Demo](./demo/demo.gif#autoplay)
 
