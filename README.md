@@ -8,27 +8,6 @@ Distributed as a standalone executable—no need to download external models or 
 
 ![Demo](./demo/demo.gif#autoplay)
 
-## 🤔 Why ash?
-
-Because your terminal doesn’t need a cloud connection or a 10GB model.
-
-## 🤔 Why ash?
-
-| Feature / Tool        | ash | ChatGPT | ShellGPT | Ollama-based tools |
-|----------------------|:---:|:-------:|:--------:|:-----------------:|
-| Runs fully local     | ✅  | ❌      | ❌       | ✅                |
-| No API key required  | ✅  | ❌      | ❌       | ✅                |
-| No large model setup | ✅  | ✅      | ❌       | ❌                |
-| Instant startup      | ✅  | ❌      | ❌       | ❌                |
-| Works offline        | ✅  | ❌      | ❌       | ✅                |
-| Shell-native UX      | ✅  | ❌      | ⚠️       | ⚠️                |
-| Privacy-first        | ✅  | ❌      | ❌       | ✅                |
-| Single binary        | ✅  | ❌      | ❌       | ❌                |
-
-**ash** focuses on speed, simplicity, and terminal-native workflows — without turning your shell into an AI stack.
-
-It does one thing well: turn natural language into shell commands — fast.
-
 🧩 Installation
 
 macOS (Homebrew)
@@ -36,6 +15,23 @@ macOS (Homebrew)
 brew tap golark/ash
 brew install ash
 ```
+
+## 🤔 Why ash?
+Because your terminal doesn’t need a cloud connection or a 10GB model.
+
+| Feature / Tool        | ash | ChatGPT | ShellGPT | Ollama-based tools |
+|----------------------|:---:|:-------:|:--------:|:-----------------:|
+| Runs fully local     | ✅  | ❌      | ❌       | ✅                |
+| No API key required  | ✅  | ❌      | ❌       | ✅                |
+| No large model setup | ✅  | ✅      | ❌       | ❌                |
+| Works offline        | ✅  | ❌      | ❌       | ✅                |
+| Shell-native UX      | ✅  | ❌      | ⚠️       | ⚠️                |
+| Privacy-first        | ✅  | ❌      | ❌       | ✅                |
+| Single binary        | ✅  | ❌      | ❌       | ❌                |
+
+**ash** focuses on speed, simplicity, and terminal-native workflows — without turning your shell into an AI stack.
+It does one thing well: turn natural language into shell commands — fast.
+
 
 ⚙️ Configuration
 
