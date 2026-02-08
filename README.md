@@ -9,7 +9,6 @@
   <img src="https://img.shields.io/badge/platform-macOS-blue" />
 
 </p>
-Distributed as a standalone executable—no need to download external models or run local runtimes like Ollama.
 
 ![Demo](./demo/demo.gif#autoplay)
 
@@ -56,6 +55,3 @@ Feel free to open an issue or submit a pull request.
 If you’re planning a larger change, please open an issue first so we can discuss the approach.
 
 By contributing, you agree that your contributions will be licensed under the Apache-2.0 License.
-
-📄 License
-Apache-2.0 © 
