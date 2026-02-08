@@ -3,7 +3,12 @@
   <br><br>
   🚀 Fast 🏠 Local & 🆓 Free
 </p>
+<p align="center">
+  <img src="https://img.shields.io/github/v/release/golark/ash" />
+  <img src="https://img.shields.io/github/license/golark/ash" />
+  <img src="https://img.shields.io/badge/platform-macOS-blue" />
 
+</p>
 Distributed as a standalone executable—no need to download external models or run local runtimes like Ollama.
 
 ![Demo](./demo/demo.gif#autoplay)
