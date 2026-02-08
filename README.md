@@ -12,11 +12,20 @@ Distributed as a standalone executable—no need to download external models or 
 
 Because your terminal doesn’t need a cloud connection or a 10GB model.
 
-**ash** is:
-- local by default
-- instant to use
-- private and offline
-- distributed as a single executable
+## 🤔 Why ash?
+
+| Feature / Tool        | ash | ChatGPT | ShellGPT | Ollama-based tools |
+|----------------------|:---:|:-------:|:--------:|:-----------------:|
+| Runs fully local     | ✅  | ❌      | ❌       | ✅                |
+| No API key required  | ✅  | ❌      | ❌       | ✅                |
+| No large model setup | ✅  | ✅      | ❌       | ❌                |
+| Instant startup      | ✅  | ❌      | ❌       | ❌                |
+| Works offline        | ✅  | ❌      | ❌       | ✅                |
+| Shell-native UX      | ✅  | ❌      | ⚠️       | ⚠️                |
+| Privacy-first        | ✅  | ❌      | ❌       | ✅                |
+| Single binary        | ✅  | ❌      | ❌       | ❌                |
+
+**ash** focuses on speed, simplicity, and terminal-native workflows — without turning your shell into an AI stack.
 
 It does one thing well: turn natural language into shell commands — fast.
 
