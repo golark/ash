@@ -16,6 +16,15 @@ brew tap golark/ash
 brew install ash
 ```
 
+Remember to Source the widget in your `.zshrc`:
+```bash
+source /path/to/ash/widget.zsh
+```
+Restart your terminal, type your command then try:
+```bash
+CTRL + G
+```
+
 ## 🤔 Why ash?
 Because your terminal doesn’t need a cloud connection or a 10GB model.
 
@@ -35,14 +44,7 @@ It does one thing well: turn natural language into shell commands — fast.
 
 ⚙️ Configuration
 
-Remember to Source the widget in your `.zshrc`:
-```bash
-source /path/to/ash/widget.zsh
-```
-Restart your terminal, type your command then try:
-```bash
-CTRL + G
-```
+
 
 📄 License
 Apache-2.0 © 
