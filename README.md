@@ -1,5 +1,5 @@
 <p align="center">
-  Simply converts natural language to shell commands
+  CLI Tool simply converts natural language to shell commands
   <br><br>
   🚀 Fast 🏠 Local & 🆓 Free
 </p>
