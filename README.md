@@ -15,8 +15,13 @@ brew tap golark/ash
 brew install ash
 ```
 
+⚙️ Configuration
+
 Remember to Source the widget in your `.zshrc`:
 ```bash
 source /path/to/ash/widget.zsh
 ```
-Press `Ctrl+G` to generate a command from your input
+Restart your terminal, type your command then try:
+```bash
+CTRL + G
+```
