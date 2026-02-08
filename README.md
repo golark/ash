@@ -20,10 +20,8 @@ Remember to Source the widget in your `.zshrc`:
 ```bash
 source /path/to/ash/widget.zsh
 ```
-Restart your terminal, type your command then try:
-```bash
-CTRL + G
-```
+Restart your terminal, type your command then hit CTRL + G 
+
 
 ## 🤔 Why ash?
 Because your terminal doesn’t need a cloud connection or a 10GB model.
