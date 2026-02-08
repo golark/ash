@@ -1,6 +1,10 @@
-ash is a CLI tool that takes natural language input and converts it into shell commands you can run instantly — locally, fast and free, with no API calls or subscriptions.
-
-⚡ Works with your local shell (e.g., zsh) and integrates as a widget for ease of use.
+<p align="center">
+  Simply converts natural language to shell commands
+  <br><br>
+  🚀 Fast 🏠 Local & 🆓 Free
+  <br><br>
+  🚫 No Subscriptions/API Calls
+</p>
 
 📸 Demo
 
