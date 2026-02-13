@@ -6,7 +6,7 @@
 <p align="center">
   <img src="https://img.shields.io/github/v/release/golark/ash" />
   <img src="https://img.shields.io/github/license/golark/ash" />
-  <img src="https://img.shields.io/badge/platform-macOS-blue" />
+  <img src="https://img.shields.io/badge/platform-macOS%20%7C%20Linux-blue" />
 
 </p>
 
@@ -14,13 +14,20 @@
 
 🧩 Installation
 
-macOS (Homebrew)
+**macOS (Homebrew):**
 ```bash
 brew tap golark/ash
 brew install ash
 ```
 
-Remember to Source the widget in your `.zshrc`:
+**Linux:** Download the latest `ash-*-linux-amd64.tar.gz` from [Releases](https://github.com/golark/ash/releases), then:
+```bash
+tar -xzf ash-*-linux-amd64.tar.gz
+cd ash-* && sudo cp ash widget.zsh /usr/local/bin/
+# Or for your user only: cp ash widget.zsh ~/.local/bin/
+```
+
+**Widget (zsh):** Source in your `.zshrc`:
 ```bash
 source /path/to/ash/widget.zsh
 ```

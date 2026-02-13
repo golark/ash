@@ -46,7 +46,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: ash-${{ matrix.platform }}-${{ matrix.arch }}
-        path: dist-package/*.tar.gz
+        path: dist/*.tar.gz
         retention-days: 30
 
   release:
@@ -66,15 +66,23 @@ jobs:
         body: |
           ## Ash ${{ github.ref_name }}
           
-          AI-powered shell assistant that translates natural language to zsh commands.
+          AI-powered shell assistant that translates natural language to shell commands (bash, zsh, etc.).
           
           ### Installation
           
-          **Homebrew (macOS):**
+          **macOS (Homebrew):**
           ```bash
-          brew tap cjan/ash
+          brew tap golark/ash
           brew install ash
           ```
           
-          **Manual:**
-          Download the tarball for your platform and extract it.
+          **Linux / macOS (manual):**
+          Download the tarball for your platform below and extract:
+          - `ash-*-darwin-arm64.tar.gz` — macOS Apple Silicon
+          - `ash-*-darwin-amd64.tar.gz` — macOS Intel
+          - `ash-*-linux-amd64.tar.gz` — Linux x86_64
+          
+          ```bash
+          tar -xzf ash-*-linux-amd64.tar.gz
+          cd ash-* && cp ash widget.zsh /usr/local/bin/  # or ~/.local/bin
+          ```

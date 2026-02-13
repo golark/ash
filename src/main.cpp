@@ -10,6 +10,7 @@
 #include <map>
 #include <algorithm>
 #include <chrono>
+#include <cstring>
 #include <iomanip>
 #include <unistd.h>
 #include <fstream>
@@ -101,17 +102,85 @@ void print_usage(const char *prog_name) {
     std::cerr << "  <prompt>: The text prompt to generate from" << std::endl;
 }
 
+// Detect shell from $SHELL (e.g. /bin/zsh -> zsh, /usr/bin/bash -> bash). Defaults to zsh.
+static std::string detect_shell() {
+    const char *shell = getenv("SHELL");
+    if (!shell || !shell[0]) return "zsh";
+    std::string s(shell);
+    size_t slash = s.rfind('/');
+    if (slash != std::string::npos && slash + 1 < s.size()) {
+        s = s.substr(slash + 1);
+    }
+    if (s.empty()) return "zsh";
+    return s;
+}
+
+// Guardrails: only allow output that looks like a single shell command.
+static const size_t MAX_COMMAND_LENGTH = 4096;
+
+// Returns true if the string looks like natural language / explanation rather than a shell command.
+static bool is_prose_prefix(const std::string& s) {
+    const char* prefixes[] = {
+        "sure", "here", "the command", "the following", "i would", "i'll ", "you can",
+        "you could", "to do", "to run", "try ", "use ", "for example", "for instance",
+        "this command", "type ", "enter ", "input ", "result:", "command:", "answer:",
+        "solution:", "here's", "here is", "that would be", "i think", "i believe",
+        "perhaps", "maybe", "sorry", "cannot", "can't", "unable"
+    };
+    const size_t n = sizeof(prefixes) / sizeof(prefixes[0]);
+    std::string lower;
+    lower.reserve(s.size());
+    for (size_t i = 0; i < s.size() && i < 64; i++) {
+        lower += (char)std::tolower((unsigned char)s[i]);
+    }
+    for (size_t i = 0; i < n; i++) {
+        if (lower.size() >= strlen(prefixes[i]) &&
+            lower.compare(0, strlen(prefixes[i]), prefixes[i]) == 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// Returns true if the string looks like a valid shell command (single line, not prose).
+static bool looks_like_shell_command(const std::string& s) {
+    if (s.empty() || s.size() > MAX_COMMAND_LENGTH) return false;
+    if (is_prose_prefix(s)) return false;
+    // Must contain at least one character that could start a command: letter, digit, or shell metachar.
+    size_t start = s.find_first_not_of(" \t");
+    if (start == std::string::npos) return false;
+    char c = s[start];
+    bool valid_start = std::isalnum((unsigned char)c) || c == '$' || c == '#' || c == '.' ||
+                       c == '/' || c == '~' || c == '(' || c == '[' || c == '{' || c == ';' ||
+                       c == '|' || c == '&' || c == '`' || c == '\'' || c == '"' || c == '=';
+    if (!valid_start) return false;
+    // Reject if it looks like a sentence (ends with period and no shell chars)
+    if (s.size() > 2 && s.back() == '.' && s.find('$') == std::string::npos &&
+        s.find('|') == std::string::npos && s.find(';') == std::string::npos &&
+        s.find('`') == std::string::npos && s.find('/') == std::string::npos) {
+        return false;
+    }
+    return true;
+}
+
+// Extract exactly the first line (single command); trim and validate.
+static std::string first_command_line(const std::string& s) {
+    size_t end = s.find('\n');
+    if (end != std::string::npos) {
+        return s.substr(0, end);
+    }
+    return s;
+}
+
 std::string clean_response(const std::string& response) {
     std::string cleaned = response;
     
     // Remove markdown code blocks (``` at start/end, possibly with language identifier)
-    // Remove leading ``` and any following text until newline
     if (cleaned.size() >= 3 && cleaned.substr(0, 3) == "```") {
         size_t newline_pos = cleaned.find('\n', 3);
         if (newline_pos != std::string::npos) {
             cleaned = cleaned.substr(newline_pos + 1);
         } else {
-            // No newline, just remove the ```
             cleaned = cleaned.substr(3);
         }
     }
@@ -119,7 +188,6 @@ std::string clean_response(const std::string& response) {
     // Remove trailing ``` (possibly on its own line or after content)
     size_t last_backtick = cleaned.rfind("```");
     if (last_backtick != std::string::npos) {
-        // Check if it's at the end or followed only by whitespace
         std::string after_backticks = cleaned.substr(last_backtick + 3);
         bool only_whitespace = true;
         for (char c : after_backticks) {
@@ -158,6 +226,21 @@ std::string clean_response(const std::string& response) {
         cleaned.clear();
     }
     
+    // Guardrail: only the first line (single command)
+    cleaned = first_command_line(cleaned);
+    
+    // Trim again after taking first line
+    start = cleaned.find_first_not_of(" \t");
+    if (start != std::string::npos) {
+        cleaned = cleaned.substr(start);
+    }
+    end = cleaned.find_last_not_of(" \t");
+    if (end != std::string::npos) {
+        cleaned = cleaned.substr(0, end + 1);
+    } else {
+        cleaned.clear();
+    }
+    
     return cleaned;
 }
 
@@ -181,8 +264,11 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    // Format the prompt using the template
-    std::string prompt = "<|im_start|>system\nYou are a terminal assistant. Output EXACTLY ONE valid zsh command. No explanations. No markdown.\n<|im_end|>\n<|im_start|>user\n" + user_prompt + "\n<|im_end|>\n<|im_start|>assistant\n";
+    // Detect shell and format the prompt so the model outputs the right syntax
+    std::string shell_name = detect_shell();
+    std::string prompt = "<|im_start|>system\nYou are a terminal assistant. Output EXACTLY ONE valid " +
+        shell_name + " command. No explanations. No markdown.\n<|im_end|>\n<|im_start|>user\n" +
+        user_prompt + "\n<|im_end|>\n<|im_start|>assistant\n";
 
     llama_log_set([](enum ggml_log_level level, const char * text, void * /* user_data */) {
         if (level >= GGML_LOG_LEVEL_ERROR) {
@@ -354,10 +440,17 @@ int main(int argc, char **argv) {
     }
     auto generation_end = std::chrono::high_resolution_clock::now();
     
-    // Clean the response
+    // Clean the response and apply guardrails: only output if it looks like a shell command
     std::string cleaned_response = clean_response(response);
+    if (!looks_like_shell_command(cleaned_response)) {
+        std::cerr << "ash: model output did not look like a shell command (guardrail)" << std::endl;
+        llama_sampler_free(smpl);
+        llama_free(ctx);
+        llama_model_free(model);
+        llama_backend_free();
+        return 1;
+    }
     std::cout << cleaned_response;
-
     std::cout << std::endl;
     
     if (debug_mode) {
