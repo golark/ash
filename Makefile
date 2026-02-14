@@ -90,3 +90,23 @@ release-homebrew: release
 	@echo "✓ Release $(VERSION) complete!"
 	@echo "  - GitHub release: https://github.com/golark/ash/releases/tag/$(VERSION)"
 	@echo "  - Homebrew formula updated and pushed"
+
+# Install the local build via Homebrew (no upload). Creates tarball, temporarily
+# points the tap formula at it, runs brew install, then restores the formula.
+# Requires: brew tap golark/ash (so the tap is installed).
+.PHONY: brew-install-local
+brew-install-local: release
+	@TARBALL_PATH="$(shell cd $(CURDIR) && pwd)/$(DIST_DIR)/$(TARBALL)"; \
+	TAP_REPO=$$(brew --repo golark/ash 2>/dev/null); \
+	if [ -z "$$TAP_REPO" ] || [ ! -d "$$TAP_REPO" ]; then \
+		echo "Error: Tap golark/ash not found. Run: brew tap golark/ash"; exit 1; \
+	fi; \
+	FORMULA="$$TAP_REPO/ash.rb"; \
+	if [ ! -f "$$FORMULA" ]; then echo "Error: $$FORMULA not found"; exit 1; fi; \
+	SHA256=$$(shasum -a 256 "$$TARBALL_PATH" 2>/dev/null | cut -d' ' -f1 || sha256sum "$$TARBALL_PATH" | cut -d' ' -f1); \
+	TARBALL_ESC=$$(echo "$$TARBALL_PATH" | sed 's/&/\\&/g'); \
+	cp "$$FORMULA" "$$FORMULA.bak"; \
+	trap 'mv "$$FORMULA.bak" "$$FORMULA"' EXIT; \
+	sed -e 's|url ".*"|url "file://'"$$TARBALL_ESC"'"|' -e 's|sha256 ".*"|sha256 "'$$SHA256'"|' "$$FORMULA.bak" > "$$FORMULA"; \
+	echo "Installing from $$TARBALL_PATH ..."; \
+	brew reinstall golark/ash/ash
