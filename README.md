@@ -19,20 +19,36 @@
 ```bash
 brew tap golark/ash
 brew install ash
+
+# Enable shell widget (Ctrl+G) - add to your shell config:
+# For Zsh (~/.zshrc):
+echo 'source $(brew --prefix)/opt/ash/widget.zsh' >> ~/.zshrc
+
+# For Bash (~/.bashrc or ~/.bash_profile):
+echo 'source $(brew --prefix)/opt/ash/widget.bash' >> ~/.bashrc
+
+# Reload your shell
+source ~/.zshrc  # or source ~/.bashrc
 ```
 
 **Linux:** Download the latest `ash-*-linux-amd64.tar.gz` from [Releases](https://github.com/golark/ash/releases), then:
 ```bash
 tar -xzf ash-*-linux-amd64.tar.gz
-cd ash-* && sudo cp ash widget.zsh /usr/local/bin/
-# Or for your user only: cp ash widget.zsh ~/.local/bin/
+cd ash-*
+sudo cp ash /usr/local/bin/
+# Or for your user only: cp ash ~/.local/bin/
+
+# Install widget using the install script
+./install-widget.sh
+
+# Or manually add to ~/.bashrc or ~/.zshrc:
+# source /path/to/ash/widget.bash  # for bash
+# source /path/to/ash/widget.zsh   # for zsh
 ```
 
-**Widget (zsh):** Source in your `.zshrc`:
-```bash
-source /path/to/ash/widget.zsh
-```
-Restart your terminal, type your command followed by CTRL + G 
+**Usage:** Type a natural language command, then press **Ctrl+G** to convert it.
+
+See [WIDGET_INSTALL.md](WIDGET_INSTALL.md) for detailed installation instructions. 
 
 
 ## 🤔 Why ash?

@@ -1,4 +1,4 @@
-.PHONY: build run clean
+.PHONY: build run clean install-widget
 
 # Note: This project depends on the llama.cpp submodule.
 # The 'build' target will automatically initialize it.
@@ -16,6 +16,11 @@ run: build
 
 clean:
 	rm -rf build
+
+install-widget:
+	@echo "Installing ash shell widget..."
+	@chmod +x install-widget.sh
+	@./install-widget.sh
 
 $(LLAMA_CPP_SENTINEL):
 	git submodule add https://github.com/ggerganov/llama.cpp $(LLAMA_CPP_DIR) || true
@@ -38,8 +43,12 @@ release: build
 	@mkdir -p $(DIST_DIR)/ash-$(VERSION)
 	@cp build/ash $(DIST_DIR)/ash-$(VERSION)/
 	@cp widget.zsh $(DIST_DIR)/ash-$(VERSION)/
+	@cp widget.bash $(DIST_DIR)/ash-$(VERSION)/
+	@cp install-widget.sh $(DIST_DIR)/ash-$(VERSION)/
+	@chmod +x $(DIST_DIR)/ash-$(VERSION)/install-widget.sh
 	@cp LICENSE $(DIST_DIR)/ash-$(VERSION)/
 	@cp README.md $(DIST_DIR)/ash-$(VERSION)/
+	@cp WIDGET_INSTALL.md $(DIST_DIR)/ash-$(VERSION)/
 	@cd $(DIST_DIR) && tar -czf $(TARBALL) ash-$(VERSION)
 	@echo "Created $(DIST_DIR)/$(TARBALL)"
 

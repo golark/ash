@@ -1,5 +1,6 @@
 # Models directory - contains large model files
 models/
+model/
 *.code-workspace
 dist/
 Formula/
@@ -39,6 +40,7 @@ venv.bak/
 # IDE
 .vscode/
 .idea/
+.claude/
 *.swp
 *.swo
 *~
@@ -58,4 +60,9 @@ logs/
 
 # Temporary files
 *.tmp
-*.temp 
+*.temp
+
+# Test scripts (development only)
+test_*.sh
+test-*.sh
+test_*.md 
