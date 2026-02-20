@@ -18,9 +18,6 @@ jobs:
           - os: macos-latest
             platform: darwin
             arch: arm64
-          - os: macos-13-large
-            platform: darwin
-            arch: amd64
           - os: ubuntu-latest
             platform: linux
             arch: amd64
@@ -90,8 +87,7 @@ jobs:
 
           **Linux / macOS (manual):**
           Download the tarball for your platform below and extract:
-          - `ash-*-darwin-arm64.tar.gz` — macOS Apple Silicon
-          - `ash-*-darwin-amd64.tar.gz` — macOS Intel
+          - `ash-*-darwin-arm64.tar.gz` — macOS (Apple Silicon & Intel via Rosetta 2)
           - `ash-*-linux-amd64.tar.gz` — Linux x86_64
 
           ```bash
@@ -113,17 +109,14 @@ jobs:
       run: |
         # Find the tarballs
         darwin_arm64=$(find . -name "ash-*-darwin-arm64.tar.gz" | head -1)
-        darwin_amd64=$(find . -name "ash-*-darwin-amd64.tar.gz" | head -1)
         linux_amd64=$(find . -name "ash-*-linux-amd64.tar.gz" | head -1)
 
         # Calculate checksums
         sha_darwin_arm64=$(sha256sum "$darwin_arm64" | cut -d' ' -f1)
-        sha_darwin_amd64=$(sha256sum "$darwin_amd64" | cut -d' ' -f1)
         sha_linux_amd64=$(sha256sum "$linux_amd64" | cut -d' ' -f1)
 
         # Output for use in next step
         echo "darwin_arm64_sha=$sha_darwin_arm64" >> $GITHUB_OUTPUT
-        echo "darwin_amd64_sha=$sha_darwin_amd64" >> $GITHUB_OUTPUT
         echo "linux_amd64_sha=$sha_linux_amd64" >> $GITHUB_OUTPUT
 
         # Get version without 'v' prefix
@@ -153,13 +146,8 @@ jobs:
           head "https://github.com/golark/ash.git", branch: "main"
 
           on_macos do
-            if Hardware::CPU.arm?
-              url "https://github.com/golark/ash/releases/download/v#{version}/ash-v#{version}-darwin-arm64.tar.gz"
-              sha256 "${{ steps.checksums.outputs.darwin_arm64_sha }}"
-            else
-              url "https://github.com/golark/ash/releases/download/v#{version}/ash-v#{version}-darwin-amd64.tar.gz"
-              sha256 "${{ steps.checksums.outputs.darwin_amd64_sha }}"
-            end
+            url "https://github.com/golark/ash/releases/download/v#{version}/ash-v#{version}-darwin-arm64.tar.gz"
+            sha256 "${{ steps.checksums.outputs.darwin_arm64_sha }}"
           end
 
           on_linux do
