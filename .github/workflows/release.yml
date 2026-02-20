@@ -53,11 +53,11 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
-    
+
     steps:
     - name: Download all artifacts
       uses: actions/download-artifact@v4
-    
+
     - name: Create Release
       uses: softprops/action-gh-release@v1
       with:
@@ -65,24 +65,140 @@ jobs:
           **/*.tar.gz
         body: |
           ## Ash ${{ github.ref_name }}
-          
+
           AI-powered shell assistant that translates natural language to shell commands (bash, zsh, etc.).
-          
+
           ### Installation
-          
+
           **macOS (Homebrew):**
           ```bash
           brew tap golark/ash
           brew install ash
           ```
-          
+
           **Linux / macOS (manual):**
           Download the tarball for your platform below and extract:
           - `ash-*-darwin-arm64.tar.gz` — macOS Apple Silicon
           - `ash-*-darwin-amd64.tar.gz` — macOS Intel
           - `ash-*-linux-amd64.tar.gz` — Linux x86_64
-          
+
           ```bash
           tar -xzf ash-*-linux-amd64.tar.gz
           cd ash-* && cp ash widget.zsh /usr/local/bin/  # or ~/.local/bin
           ```
+
+  update-homebrew:
+    needs: release
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+
+    - name: Calculate SHA256 checksums
+      id: checksums
+      run: |
+        # Find the tarballs
+        darwin_arm64=$(find . -name "ash-*-darwin-arm64.tar.gz" | head -1)
+        darwin_amd64=$(find . -name "ash-*-darwin-amd64.tar.gz" | head -1)
+        linux_amd64=$(find . -name "ash-*-linux-amd64.tar.gz" | head -1)
+
+        # Calculate checksums
+        sha_darwin_arm64=$(sha256sum "$darwin_arm64" | cut -d' ' -f1)
+        sha_darwin_amd64=$(sha256sum "$darwin_amd64" | cut -d' ' -f1)
+        sha_linux_amd64=$(sha256sum "$linux_amd64" | cut -d' ' -f1)
+
+        # Output for use in next step
+        echo "darwin_arm64_sha=$sha_darwin_arm64" >> $GITHUB_OUTPUT
+        echo "darwin_amd64_sha=$sha_darwin_amd64" >> $GITHUB_OUTPUT
+        echo "linux_amd64_sha=$sha_linux_amd64" >> $GITHUB_OUTPUT
+
+        # Get version without 'v' prefix
+        version="${GITHUB_REF_NAME#v}"
+        echo "version=$version" >> $GITHUB_OUTPUT
+
+    - name: Checkout homebrew-ash repo
+      uses: actions/checkout@v4
+      with:
+        repository: golark/homebrew-ash
+        token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+        path: homebrew-ash
+
+    - name: Update Homebrew formula
+      run: |
+        cd homebrew-ash
+
+        cat > ash.rb << 'EOF'
+        # typed: false
+        # frozen_string_literal: true
+
+        class Ash < Formula
+          desc "AI-powered shell assistant that translates natural language to shell commands"
+          homepage "https://github.com/golark/ash"
+          version "${{ steps.checksums.outputs.version }}"
+          license "Apache-2.0"
+          head "https://github.com/golark/ash.git", branch: "main"
+
+          on_macos do
+            if Hardware::CPU.arm?
+              url "https://github.com/golark/ash/releases/download/v#{version}/ash-v#{version}-darwin-arm64.tar.gz"
+              sha256 "${{ steps.checksums.outputs.darwin_arm64_sha }}"
+            else
+              url "https://github.com/golark/ash/releases/download/v#{version}/ash-v#{version}-darwin-amd64.tar.gz"
+              sha256 "${{ steps.checksums.outputs.darwin_amd64_sha }}"
+            end
+          end
+
+          on_linux do
+            if Hardware::CPU.intel?
+              url "https://github.com/golark/ash/releases/download/v#{version}/ash-v#{version}-linux-amd64.tar.gz"
+              sha256 "${{ steps.checksums.outputs.linux_amd64_sha }}"
+            end
+          end
+
+          def install
+            bin.install "ash"
+            prefix.install "widget.zsh"
+            prefix.install "widget.bash"
+          end
+
+          def caveats
+            <<~EOS
+            To enable the shell assistant widget (Ctrl+G), add to your shell config:
+
+            For Zsh (~/.zshrc):
+              source #{opt_prefix}/widget.zsh
+
+            For Bash (~/.bashrc or ~/.bash_profile):
+              source #{opt_prefix}/widget.bash
+
+            Then reload your terminal with: source ~/.zshrc (or source ~/.bashrc)
+
+            Usage: Type a natural language command, press Ctrl+G to convert it.
+
+            Note: On first use, ash will download a ~2GB model to ~/.ash/models/
+            This ensures all processing runs locally on your device.
+
+            To uninstall completely:
+              brew uninstall ash
+              rm -rf ~/.ash/models/  # Remove downloaded model
+              # Remove the "source ..." line from your shell config
+            EOS
+          end
+
+          test do
+            output = shell_output("#{bin}/ash 2>&1", 1)
+            assert_match(/Usage:/, output)
+          end
+        end
+        EOF
+
+    - name: Commit and push changes
+      run: |
+        cd homebrew-ash
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git add ash.rb
+        git commit -m "ash: update to ${{ github.ref_name }}"
+        git push
