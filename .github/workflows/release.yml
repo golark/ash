@@ -47,7 +47,7 @@ jobs:
       run: |
         make release
       env:
-        VERSION: ${GITHUB_REF#refs/tags/}
+        VERSION: ${{ github.ref_name }}
         PLATFORM: ${{ matrix.platform }}
         ARCH: ${{ matrix.arch }}
     
