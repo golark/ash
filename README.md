@@ -1,8 +1,9 @@
 <p align="center">
   Converts natural language into shell commands
-  Local, private, and free —no API keys, no Ollama setup, just install and start using
   <br><br>
   🚀 Fast 🏠 Local & 🆓 Free
+  <br><br>
+  no API keys, no Ollama setup, just install and start using
 </p>
 <p align="center">
   <img src="https://github.com/golark/ash/actions/workflows/ci.yml/badge.svg" alt="Build status" />
