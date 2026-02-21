@@ -1,5 +1,6 @@
 <p align="center">
-  CLI Tool simply converts natural language to shell commands
+  Converts natural language into shell commands
+  Local, private, and free —no API keys, no Ollama setup, just install and start using
   <br><br>
   🚀 Fast 🏠 Local & 🆓 Free
 </p>
@@ -52,7 +53,7 @@ See [WIDGET_INSTALL.md](WIDGET_INSTALL.md) for detailed installation instruction
 
 
 ## 🤔 Why ash?
-Because your terminal doesn’t need a cloud connection or a 10GB model.
+You don’t need massive AI models, API calls just to convert natural language to shell commands — ash uses a small, efficient model that runs locally.
 
 | Feature / Tool        | ash | ChatGPT | ShellGPT | Ollama-based tools |
 |----------------------|:---:|:-------:|:--------:|:-----------------:|
@@ -60,7 +61,6 @@ Because your terminal doesn’t need a cloud connection or a 10GB model.
 | No API key required  | ✅  | ❌      | ❌       | ✅                |
 | No large model setup | ✅  | ✅      | ❌       | ❌                |
 | Works offline        | ✅  | ❌      | ❌       | ✅                |
-| Shell-native UX      | ✅  | ❌      | ⚠️       | ⚠️                |
 | Privacy-first        | ✅  | ❌      | ❌       | ✅                |
 | Single binary        | ✅  | ❌      | ❌       | ❌                |
 
